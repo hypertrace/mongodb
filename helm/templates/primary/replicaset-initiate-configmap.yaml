@@ -1,0 +1,97 @@
+{{- if .Values.replicaSet.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "mongodb.fullname" . }}-script-configmap
+  labels:
+    app: {{ template "mongodb.name" . }}
+    chart: {{ template "mongodb.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  replicaset.sh: |
+    #!/bin/sh -x
+
+    RS_NAME={{ .Values.replicaSet.name | quote }}
+    FULLNAME={{ template "mongodb.fullname" . }}
+    SERVICE_NAME={{ template "mongodb.fullname" . }}-headless
+    SECONDARY_COUNT={{ int .Values.replicaSet.replicas.secondary }}
+    ARBITER_COUNT={{ int .Values.replicaSet.replicas.arbiter }}
+    PORT={{ int .Values.service.port }}
+
+    PRIMARY_NODE="${FULLNAME}-primary-0.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local"
+
+    wait_for_mongo(){
+      local host="$1"
+      local port="$2"
+
+      ready="false"
+      i=0
+      while [ $i -lt 30 ]; do
+        mongo --host $host --port $port --eval "db.adminCommand('ping')"
+        if [ $? -eq 0 ]; then
+          ready="true"
+          break
+        fi
+        sleep 10
+        i=$(expr $i + 1)
+      done
+      if [ "$ready" = "false" ]; then
+        echo "Host $host is not ready"
+        exit 1
+      fi
+    }
+
+    finish() {
+      pkill -f /usr/local/bin/pilot-agent || true
+    }
+    trap finish EXIT
+
+    # wait for all mongo instances to be up and running
+    wait_for_mongo "$PRIMARY_NODE" "$PORT"
+    i=0
+    while [ $i -lt $SECONDARY_COUNT ]; do
+      wait_for_mongo "${FULLNAME}-secondary-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local" "$PORT"
+      i=$(expr $i + 1)
+    done
+    i=0
+    while [ $i -lt $ARBITER_COUNT ]; do
+      wait_for_mongo "${FULLNAME}-arbiter-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local" "$PORT"
+      i=$(expr $i + 1)
+    done
+    sleep 20
+
+    # check if resplica set is already initialized or not.
+    mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.status()"
+    mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.status()" | grep -q "\"ok\" : 1"
+    if [ $? -eq 0 ]; then
+      echo "Replica Set $RS_NAME is already initialized"
+      exit 0
+    fi
+
+    # initialize replica set with primary node
+    mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.initiate({_id: \"$RS_NAME\", version: 1, members: [{ _id: 0, host: \"$PRIMARY_NODE:$PORT\", priority: 10 }]})"
+    if [ $? -ne 0 ]; then
+      echo "failed to initiate resplica set $RS_NAME"
+      exit 1
+    fi
+    sleep 5
+
+    # add secondary nodes
+    i=0
+    while [ $i -lt $SECONDARY_COUNT ]; do
+      mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.add({host: \"${FULLNAME}-secondary-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local:$PORT\", priority: 1})"
+      i=$(expr $i + 1)
+    done
+
+    # add arbiter nodes
+    i=0
+    while [ $i -lt $ARBITER_COUNT ]; do
+      mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.addArb(\"${FULLNAME}-arbiter-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local:$PORT\")"
+      i=$(expr $i + 1)
+    done
+    sleep 10
+
+    # print replicaset status
+    mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.status()"
+{{- end }}

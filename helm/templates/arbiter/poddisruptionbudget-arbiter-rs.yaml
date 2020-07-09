@@ -1,0 +1,27 @@
+{{- if and .Values.replicaSet.enabled .Values.replicaSet.podDisruptionBudget.enabled }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app: {{ template "mongodb.name" . }}
+    chart: {{ template "mongodb.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "mongodb.fullname" . }}-arbiter
+spec:
+  {{- if .Values.replicaSet.podDisruptionBudget.minAvailable }}
+  {{- if .Values.replicaSet.podDisruptionBudget.minAvailable.arbiter }}
+  minAvailable: {{ .Values.replicaSet.podDisruptionBudget.minAvailable.arbiter }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.replicaSet.podDisruptionBudget.maxUnavailable }}
+  {{- if .Values.replicaSet.podDisruptionBudget.maxUnavailable.arbiter }}
+  maxUnavailable: {{ .Values.replicaSet.podDisruptionBudget.maxUnavailable.arbiter }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "mongodb.name" . }}
+      release: {{ .Release.Name }}
+      component: arbiter
+{{- end }}

@@ -1,0 +1,272 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: mongo
+  tag: 4.2.7
+  pullPolicy: "IfNotPresent"
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  name: ""
+
+## Enable authentication
+usePassword: false
+
+## MongoDB admin password
+mongodbRootUsername: root
+mongodbRootPassword: ""
+
+## Pod Security Context
+securityContext:
+  enabled: false
+  # fsGroup: 1001
+  # runAsUser: 1001
+
+## Kubernetes service type
+service:
+  name: ""
+  annotations: {}
+  type: ClusterIP
+  clusterIP: ""
+  port: 27017
+  nodePort: ""
+  externalIPs: []
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+
+## Setting up replication
+replicaSet:
+  enabled: false
+  name: rs0
+  enableMajorityReadConcern: true
+  key: ""
+
+  ## Number of replicas per each node type
+  replicas:
+    secondary: 1
+    arbiter: 1
+
+  ## Pod Disruption Budget
+  podDisruptionBudget:
+    enabled: false
+    minAvailable:
+      secondary: 1
+      arbiter: 1
+    maxUnavailable:
+      secondary: ""
+      arbiter: ""
+
+# Annotations to be added to the deployment or statefulsets
+annotations: {}
+
+# Additional labels to apply to the deployment or statefulsets
+labels: {}
+
+# Annotations to be added to MongoDB pods
+podAnnotations: {}
+
+# Additional pod labels to apply
+podLabels: {}
+
+## Configure resource requests and limits
+resources: {}
+
+# Define separate resources per arbiter, which are less then primary or secondary
+# used only when replica set is enabled
+resourcesArbiter: {}
+# limits:
+#   cpu: 500m
+#   memory: 512Mi
+# requests:
+#   cpu: 100m
+#   memory: 256Mi
+
+## Node selector
+nodeSelector: {}
+
+## Define Separate nodeSelector for secondaries
+nodeSelectorSecondary: {}
+
+## Define Separate nodeSelector for arbiter
+nodeSelectorArbiter: {}
+
+## Affinity
+affinity: {}
+
+# Define separate affinity for secondary pod
+affinitySecondary: {}
+
+# Define separate affinity for arbiter pod
+affinityArbiter: {}
+
+## Tolerations
+tolerations: []
+
+## updateStrategy for MongoDB Primary, Secondary and Arbitrer statefulsets
+updateStrategy:
+  type: RollingUpdate
+
+## Enable persistence using Persistent Volume Claims
+persistence:
+  mountPath: /data/db
+  subPath: ""
+  storageClassName: "standard"
+  accessModes: ["ReadWriteOnce"]
+  size: 2Gi
+
+## Configure extra options for liveness and readiness probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+# Storage class
+storageclass:
+  enabled: false
+  name: mongo
+  annotations: {}
+  provisioner: kubernetes.io/gce-pd
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+  parameters:
+    type: pd-standard
+
+config:
+  storage:
+    directoryPerDB: false
+    journal:
+      enabled: true
+  systemLog:
+    verbosity: 0
+  security:
+    authorization: disabled
+  net:
+    ipv6: false
+    bindIpAll: true
+
+exporter:
+  enabled: false
+
+  affinity: {}
+
+  annotations: {}
+
+  extraArgs:
+  - --collect.collection
+  - --collect.database
+  - --collect.indexusage
+  - --collect.topmetrics
+  - --collect.connpoolstats
+
+  image:
+    pullPolicy: IfNotPresent
+    repository: ssheehy/mongodb-exporter
+    tag: 0.10.0
+
+  imagePullSecrets: []
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: metrics
+    initialDelaySeconds: 10
+
+  # [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
+  mongodb:
+    uri: mongo:27017
+
+  nodeSelector: {}
+
+  podAnnotations: {}
+  #  prometheus.io/scrape: "true"
+  #  prometheus.io/port: "metrics"
+
+  port: "9216"
+
+  priorityClassName: ""
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: metrics
+    initialDelaySeconds: 10
+
+  replicas: 1
+
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # Extra environment variables that will be passed into the exporter pod
+  env: {}
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["all"]
+    readOnlyRootFilesystem: true
+    runAsGroup: 10000
+    runAsNonRoot: true
+    runAsUser: 10000
+
+  service:
+    annotations: {}
+    port: 9216
+    type: ClusterIP
+
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    scrapeTimeout: 10s
+    secure: false
+    tlsConfig: {}
+    namespace:
+    additionalLabels: {}
+
+  tolerations: []
+
+  dashboard:
+    enabled: false
+    namespace: monitoring
+    annotations: {}
+
+  prometheusrule:
+    enabled: false
+    annotations: {}
+
+backup:
+  enabled: false
+  schedule: "0 4 * * *"
+  startingDeadlineSeconds: 86400
+  concurrencyPolicy: Forbid
+  image:
+    repository: "hypertrace/mongodb-backup"
+    pullPolicy: "IfNotPresent"
+  imagePullSecrets: []
+  mongodb:
+    uri: "mongo://mongodb:27017"
+  cluster: "test"
+  gcloud: {}
+  affinity: {}
+  nodeSelector: {}
+  securityContext: {}
+  tolerations: []
+  podAnnotations: {}

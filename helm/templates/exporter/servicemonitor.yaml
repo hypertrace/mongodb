@@ -1,0 +1,35 @@
+{{ if and ( .Values.exporter.enabled ) ( .Values.exporter.serviceMonitor.enabled ) }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "mongodb-exporter.fullname" . }}
+  labels:
+    app: {{ include "mongodb-exporter.name" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    chart: {{ include "mongodb.chart" . }}
+    monitoring: shared
+    {{- range $key, $value := .Values.exporter.serviceMonitor.additionalLabels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- if .Values.exporter.serviceMonitor.namespace }}
+  namespace: {{ .Values.exporter.serviceMonitor.namespace }}
+  {{- end }}
+spec:
+  endpoints:
+    - port: metrics
+      interval: {{ .Values.exporter.serviceMonitor.interval }}
+      scrapeTimeout: {{ .Values.exporter.serviceMonitor.scrapeTimeout }}
+      {{- if .Values.exporter.serviceMonitor.secure }}
+      scheme: https
+      tlsConfig:
+        {{- toYaml .Values.exporter.serviceMonitor.tlsConfig | nindent 8 }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app: {{ include "mongodb-exporter.name" . }}
+      release: {{ .Release.Name }}
+{{- end }}

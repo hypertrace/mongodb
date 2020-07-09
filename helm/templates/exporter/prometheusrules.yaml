@@ -1,0 +1,109 @@
+{{- if and ( .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" ) ( .Values.exporter.enabled ) ( .Values.exporter.prometheusrule.enabled ) }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "mongodb-exporter.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "mongodb-exporter.name" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    chart: {{ include "mongodb.chart" . }}
+    monitoring: shared
+  {{- if .Values.exporter.prometheusrule.annotations }}
+  annotations:
+    {{- toYaml .Values.exporter.prometheusrule.annotations | indent 4 }}
+  {{- end }}
+spec:
+  groups:
+    - name: {{ include "mongodb-exporter.fullname" . }}
+      rules:
+        - alert: MongodbPrimaryNotAvailable
+          expr: count(mongodb_mongod_replset_member_state{state="PRIMARY"}) != 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "MongoDB Primary Not Available"
+            message: "Mongodb primary is not available. value={{`{{ $value }}`}}"
+        - alert: MongodbReplicationLag
+          expr: avg(mongodb_mongod_replset_member_optime_date{state="PRIMARY"}) - avg(mongodb_mongod_replset_member_optime_date{state="SECONDARY"}) > 10
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "MongoDB replication lag"
+            message: "Mongodb replication lag is more than 10s. value={{`{{ $value }}`}}"
+        - alert: MongodbReplicationHeadroom
+          expr: (avg(mongodb_mongod_replset_oplog_head_timestamp - mongodb_mongod_replset_oplog_tail_timestamp) - (avg(mongodb_mongod_replset_member_optime_date{state="PRIMARY"}) - avg(mongodb_mongod_replset_member_optime_date{state="SECONDARY"}))) <= 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "MongoDB replication headroom"
+            message: "MongoDB replication headroom is <= 0. value={{`{{ $value }}`}}"
+        - alert: MongodbReplicationStatus3
+          expr: mongodb_mongod_replset_member_state == 3
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "MongoDB replication Status 3"
+            message: "MongoDB Replication set member either perform startup self-checks, or transition from completing a rollback or resync. value={{`{{ $value }}`}}"
+        - alert: MongodbReplicationStatus6
+          expr: mongodb_mongod_replset_member_state == 6
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "MongoDB replication Status 6"
+            message: "MongoDB Replication set member as seen from another member of the set, is not yet known. value={{`{{ $value }}`}}"
+        - alert: MongodbReplicationStatus8
+          expr: mongodb_mongod_replset_member_state == 8
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "MongoDB replication Status 8"
+            message: "MongoDB Replication set member as seen from another member of the set, is unreachable. value={{`{{ $value }}`}}"
+        - alert: MongodbReplicationStatus9
+          expr: mongodb_mongod_replset_member_state == 9
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "MongoDB replication Status 9"
+            message: "MongoDB Replication set member is actively performing a rollback. Data is not available for reads. value={{`{{ $value }}`}}"
+        - alert: MongodbReplicationStatus10
+          expr: mongodb_mongod_replset_member_state == 10
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "MongoDB replication Status 10"
+            message: "MongoDB Replication set member was once in a replica set but was subsequently removed. value={{`{{ $value }}`}}"
+        - alert: MongodbNumberCursorsOpen
+          expr: mongodb_mongod_metrics_cursor_open{state="total_open"} > 10000
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "MongoDB number cursors open"
+            message: "Too many cursors opened by MongoDB for clients (> 10k). value={{`{{ $value }}`}}"
+        - alert: MongodbCursorsTimeouts
+          expr: increase(mongodb_mongod_metrics_cursor_timed_out_total[10m]) > 100
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "MongoDB cursors timeouts"
+            message: "Too many cursors are timing out. value={{`{{ $value }}`}}"
+        - alert: MongodbTooManyConnections
+          expr: mongodb_connections{state="current"} > 500
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "MongoDB too many connections"
+            message: "Too many connections. value={{`{{ $value }}`}}"
+{{- end }}

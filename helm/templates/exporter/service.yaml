@@ -1,0 +1,23 @@
+{{- if .Values.exporter.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mongodb-exporter.fullname" . }}
+  labels:
+    app: {{ include "mongodb-exporter.name" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    chart: {{ include "mongodb.chart" . }}
+  annotations:
+    {{- toYaml .Values.exporter.service.annotations | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.exporter.service.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    app: {{ include "mongodb-exporter.name" . }}
+    release: {{ .Release.Name }}
+  type: {{ .Values.exporter.service.type }}
+{{- end }}

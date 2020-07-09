@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "mongodb.name" . }}
+    chart: {{ template "mongodb.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "mongodb.fullname" . }}
+data:
+  mongodb.conf: |
+    # where and how to store data.
+    storage:
+      dbPath: {{ .Values.persistence.mountPath }}
+      {{- if .Values.config.storage.indexBuildRetry }}
+      indexBuildRetry: {{ .Values.config.storage.indexBuildRetry }}
+      {{- end }}
+      journal:
+        enabled: {{ .Values.config.storage.journal.enabled }}
+        {{- if .Values.config.storage.journal.commitIntervalMs }}
+        commitIntervalMs: {{ int .Values.config.storage.journal.commitIntervalMs }}
+        {{- end }}
+      {{- if .Values.config.storage.directoryPerDB }}
+      directoryPerDB: {{ .Values.config.storage.directoryPerDB }}
+      {{- end }}
+      {{- if .Values.config.storage.syncPeriodSecs }}
+      syncPeriodSecs: {{ .Values.config.storage.syncPeriodSecs }}
+      {{- end }}
+      {{- if .Values.config.storage.engine }}
+      engine: {{ .Values.config.storage.engine }}
+      {{- end }}
+      {{- if .Values.config.storage.wiredTiger }}
+      wiredTiger:
+        {{- if .Values.config.storage.wiredTiger.engineConfig }}
+        engineConfig:
+          {{- if .Values.config.storage.wiredTiger.engineConfig.cacheSizeGB }}
+          cacheSizeGB: {{ int .Values.config.storage.wiredTiger.engineConfig.cacheSizeGB }}
+          {{- end }}
+          {{- if .Values.config.storage.wiredTiger.engineConfig.journalCompressor }}
+          journalCompressor: {{ .Values.config.storage.wiredTiger.engineConfig.journalCompressor }}
+          {{- end }}
+          {{- if .Values.config.storage.wiredTiger.engineConfig.directoryForIndexes }}
+          directoryForIndexes: {{ .Values.config.storage.wiredTiger.engineConfig.directoryForIndexes }}
+          {{- end }}
+          {{- if .Values.config.storage.wiredTiger.engineConfig.maxCacheOverflowFileSizeGB }}
+          maxCacheOverflowFileSizeGB: {{ int   .Values.config.storage.wiredTiger.engineConfig.maxCacheOverflowFileSizeGB }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.config.storage.wiredTiger.collectionConfig }}
+        {{- if .Values.config.storage.wiredTiger.collectionConfig.blockCompressor }}
+        collectionConfig:
+          blockCompressor: {{ .Values.config.storage.wiredTiger.collectionConfig.blockCompressor }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.config.storage.wiredTiger.indexConfig }}
+        {{- if .Values.config.storage.wiredTiger.indexConfig.prefixCompression }}
+        indexConfig:
+          prefixCompression: {{ .Values.config.storage.wiredTiger.indexConfig.prefixCompression }}
+        {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- if .Values.config.storage.inMemory }}
+      inMemory:
+        engineConfig:
+          inMemorySizeGB: {{ .Values.config.storage.inMemory.engineConfig.inMemorySizeGB }}
+      {{- end }}
+    # where to write logging data.
+    systemLog:
+      #destination: file
+      quiet: false
+      logAppend: true
+      logRotate: reopen
+      #path: /var/log/mongodb/mongodb.log
+      verbosity: {{ int .Values.config.systemLog.verbosity }}
+    # network interfaces
+    net:
+      port: {{ .Values.service.port }}
+      unixDomainSocket:
+        enabled: true
+        pathPrefix: /tmp
+      ipv6: {{ .Values.config.net.ipv6 }}
+      bindIpAll: {{ .Values.config.net.bindIpAll }}
+      {{- if .Values.config.net.maxIncomingConnections }}
+      maxIncomingConnections: {{ .Values.config.net.maxIncomingConnections }}
+      {{- end }}
+    # replica set options
+    {{- if .Values.replicaSet.enabled }}
+    replication:
+      replSetName: {{ .Values.replicaSet.name }}
+      {{- if .Values.replicaSet.enableMajorityReadConcern }}
+      enableMajorityReadConcern: {{ .Values.replicaSet.enableMajorityReadConcern }}
+      {{- end }}
+      {{- if .Values.replicaSet.oplogSizeMB }}
+      oplogSizeMB: {{ .Values.replicaSet.oplogSizeMB }}
+      {{- end }}
+    {{- end }}
+    # process management options
+    processManagement:
+      fork: false
+      pidFilePath: /tmp/mongodb.pid
+      {{- if .Values.config.processManagement }}
+      {{- if .Values.config.processManagement.timeZoneInfo }}
+      timeZoneInfo: {{ .Values.config.processManagement.timeZoneInfo }}
+      {{- end }}
+      {{- end }}
+    # set parameter options
+    setParameter:
+      enableLocalhostAuthBypass: true
+    # security options
+    security:
+      authorization: {{ .Values.config.security.authorization }}
+    {{- if .Values.config.operationProfiling }}
+    operationProfiling:
+      mode: {{ .Values.config.operationProfiling.mode }}
+      {{- if .Values.config.operationProfiling.slowOpThresholdMs }}
+      slowOpThresholdMs: {{ .Values.config.operationProfiling.slowOpThresholdMs }}
+      {{- end }}
+      {{- if .Values.config.operationProfiling.slowOpSampleRate }}
+      slowOpSampleRate: {{ .Values.config.operationProfiling.slowOpSampleRate }}
+      {{- end }}
+    {{- end }}
