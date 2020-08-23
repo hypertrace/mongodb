@@ -100,7 +100,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - package-charts:
           context: hypertrace-publishing
           requires:
@@ -108,4 +108,4 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
