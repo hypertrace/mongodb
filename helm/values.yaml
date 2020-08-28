@@ -3,7 +3,7 @@ fullnameOverride: ""
 
 image:
   repository: mongo
-  tag: 4.2.7
+  tag: 4.4.0
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
