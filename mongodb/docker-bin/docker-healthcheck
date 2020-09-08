@@ -1,0 +1,11 @@
+#!/bin/sh
+# HEALTHCHECK for use in `docker ps` or `docker-compose ps`.
+# It can also be used as a readiness probe in k8s
+
+set -ue
+
+if mongo --quiet --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 1)' > /dev/null; then
+	exit 0
+fi
+
+exit 1
