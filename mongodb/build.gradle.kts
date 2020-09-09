@@ -5,6 +5,6 @@ plugins {
 
 hypertraceDocker {
   defaultImage {
-    imageName.set("mongodb-backup")
+    imageName.set("mongodb")
   }
 }
