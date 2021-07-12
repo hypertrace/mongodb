@@ -16,6 +16,8 @@ RUN apk add --update \
   linux-headers \
   musl-dev \
   openssl-dev \
+  rust \
+  cargo \
   && pip install gsutil \
   && apk del build-deps \
   && rm -rf /var/cache/apk/*
