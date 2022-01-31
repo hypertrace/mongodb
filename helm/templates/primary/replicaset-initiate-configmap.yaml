@@ -43,7 +43,9 @@ data:
     }
 
     finish() {
-      pkill -f /usr/local/bin/pilot-agent || true
+      code=$?
+      curl -s -XPOST http://127.0.0.1:15020/quitquitquit
+      exit $code
     }
     trap finish EXIT
 

@@ -1,4 +1,4 @@
-{{- if .Values.replicaSet.enabled }}
+{{- if and .Values.replicaSet.enabled .Values.replicaSet.job.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -18,11 +18,10 @@ spec:
       name: "replicaset-initiate-job"
     spec:
       restartPolicy: Never
-      shareProcessNamespace: true
       containers:
         - name: {{ printf "%s-create-replicaset-initiate-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.replicaSet.job.image.repository }}:{{ default .Chart.AppVersion .Values.replicaSet.job.image.tag }}"
+          imagePullPolicy: {{ .Values.replicaSet.job.image.pullPolicy }}
           command: ["/scripts/replicaset.sh"]
           env:
             - name: NAMESPACE

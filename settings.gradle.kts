@@ -12,3 +12,4 @@ plugins {
 
 include(":mongodb")
 include(":mongodb-backup")
+include(":mongodb-curl")
