@@ -59,6 +59,14 @@ replicaSet:
       secondary: ""
       arbiter: ""
 
+  ## job for initiating replica set
+  job:
+    enabled: true
+    image:
+      repository: hypertrace/mongo-curl
+      tag: ""
+      pullPolicy: IfNotPresent
+
 # Annotations to be added to the deployment or statefulsets
 annotations: {}
 
