@@ -13,9 +13,9 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.exporter.service.port }}
-      targetPort: metrics
+      targetPort: http-metrics
       protocol: TCP
-      name: metrics
+      name: http-metrics
   selector:
     app: {{ include "mongodb-exporter.name" . }}
     release: {{ .Release.Name }}

@@ -37,7 +37,10 @@ spec:
               args:
                 - |
                   finish() {
-                    curl -sf -XPOST http://127.0.0.1:15020/quitquitquit || true
+                    code=$?
+                    curl -s -XPOST http://127.0.0.1:15020/quitquitquit
+                    rm /backup/mongodb*
+                    exit $code
                   }
                   trap finish EXIT
 
@@ -58,7 +61,7 @@ spec:
                   timestamp=$(date +%Y-%m-%d-%H-%M-%S)
                   month=$(date +%Y-%m)
                   BACKUP_LOCATION=gs://$BUCKET/mongodb/$CLUSTER_NAME/$month
-                  mongodump --uri="$MONGODB_URI" --oplog --gzip --archive=/backup/mongodb-${timestamp}.tar.gz || exit 2
+                  mongodump --uri="$MONGODB_URI" {{ if .Values.backup.oplog }} --oplog {{ end }} --gzip --archive=/backup/mongodb-${timestamp}.tar.gz || exit 2
                   gsutil cp "/backup/mongodb-${timestamp}.tar.gz" "$BACKUP_LOCATION/mongodb-${timestamp}.tar.gz" || exit 2
                   rm /backup/mongodb-${timestamp}.tar.gz || exit 0
               env:

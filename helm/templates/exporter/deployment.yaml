@@ -47,7 +47,7 @@ spec:
             - --web.listen-address={{ printf ":%s" .Values.exporter.port }}
             {{- toYaml .Values.exporter.extraArgs | nindent 12 }}
           ports:
-            - name: metrics
+            - name: http-metrics
               containerPort: {{ .Values.exporter.port }}
               protocol: TCP
           livenessProbe:

@@ -190,7 +190,7 @@ exporter:
   livenessProbe:
     httpGet:
       path: /
-      port: metrics
+      port: http-metrics
     initialDelaySeconds: 10
 
   # [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
@@ -210,7 +210,7 @@ exporter:
   readinessProbe:
     httpGet:
       path: /
-      port: metrics
+      port: http-metrics
     initialDelaySeconds: 10
 
   replicas: 1
@@ -271,6 +271,7 @@ backup:
   imagePullSecrets: []
   mongodb:
     uri: "mongo://mongodb:27017"
+  oplog: false
   cluster: "test"
   gcloud: {}
   affinity: {}
