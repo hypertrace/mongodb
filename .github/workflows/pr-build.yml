@@ -34,6 +34,34 @@ jobs:
         with: 
           args: build dockerBuildImages
 
+      - name: Determine docker tag
+        id: tag
+        run: echo ::set-output name=tag::$(./gradlew -q printDockerImageDefaultTag | head -1)
+
+      - name: Scan docker image
+        uses: azure/container-scan@v0.1
+        with:
+          image-name: hypertrace/mongodb:${{ steps.tag.outputs.tag }}
+        env:
+          DOCKLE_HOST: "unix:///var/run/docker.sock"
+        continue-on-error: true
+
+      - name: Scan docker image
+        uses: azure/container-scan@v0.1
+        with:
+          image-name: hypertrace/mongo-curl:${{ steps.tag.outputs.tag }}
+        env:
+          DOCKLE_HOST: "unix:///var/run/docker.sock"
+        continue-on-error: true
+
+      - name: Scan docker image
+        uses: azure/container-scan@v0.1
+        with:
+          image-name: hypertrace/mongodb-backup:${{ steps.tag.outputs.tag }}
+        env:
+          DOCKLE_HOST: "unix:///var/run/docker.sock"
+        continue-on-error: true
+
   validate-helm-charts:
     runs-on: ubuntu-20.04
     steps:
