@@ -22,7 +22,10 @@
   "panels": [
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -36,7 +39,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -135,7 +141,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -239,7 +248,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -347,7 +359,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -374,7 +389,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -476,7 +494,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -583,7 +604,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -682,7 +706,10 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -696,7 +723,10 @@
           "bars": true,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -806,7 +836,10 @@
           "bars": true,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "description": "See which node is currently acting as the primary, secondary, ...",
           "fill": 1,
           "fillGradient": 0,
@@ -909,7 +942,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1017,7 +1053,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1044,7 +1083,10 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1157,7 +1199,10 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "See which node is currently acting as the primary, secondary, ...",
       "fill": 1,
       "fillGradient": 0,
@@ -1263,7 +1308,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1362,7 +1410,10 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1380,7 +1431,10 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "decimals": null,
           "format": "s",
           "gauge": {
@@ -1470,7 +1524,10 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "decimals": null,
           "format": "none",
           "gauge": {
@@ -1561,7 +1618,10 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "format": "none",
           "gauge": {
             "maxValue": 100,
@@ -1656,7 +1716,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1687,7 +1750,10 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "decimals": null,
       "format": "s",
       "gauge": {
@@ -1780,7 +1846,10 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "decimals": null,
       "format": "none",
       "gauge": {
@@ -1874,7 +1943,10 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1960,7 +2032,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1978,7 +2053,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2076,7 +2154,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2207,7 +2288,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2308,7 +2392,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2398,7 +2485,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2415,7 +2505,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "The total size in memory of all records in a collection",
       "fill": 1,
       "fillGradient": 0,
@@ -2509,7 +2602,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "The total size in memory of all records in a collection",
       "fill": 1,
       "fillGradient": 0,
@@ -2603,7 +2699,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": " The individual index size",
       "fill": 1,
       "fillGradient": 0,
@@ -2694,7 +2793,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2711,7 +2813,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "The top command provides operation count for each database collection",
       "fill": 1,
       "fillGradient": 0,
@@ -2805,7 +2910,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "The top command provides operation time, in seconds, for each database collection",
       "fill": 1,
       "fillGradient": 0,
@@ -2899,10 +3007,30 @@
   "schemaVersion": 22,
   "style": "dark",
   "tags": [
-    "prometheus"
+    "prometheus",
+    "hypertrace"
   ],
   "templating": {
     "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "default",
+          "value": "default"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Data Source",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
       {
         "allValue": null,
         "current": {
@@ -2911,7 +3039,10 @@
             "$__all"
           ]
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
         "definition": "",
         "hide": 0,
         "includeAll": true,
