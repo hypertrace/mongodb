@@ -2118,7 +2118,7 @@
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 2,
+        "sort": 1,
         "type": "query"
       },
       {
@@ -2145,7 +2145,7 @@
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 2,
+        "sort": 1,
         "type": "query"
       }
     ]
