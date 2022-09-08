@@ -127,7 +127,7 @@
       "title": "Query Operations",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -230,7 +230,7 @@
       "title": "Document Operations",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -327,7 +327,7 @@
       "title": "Document Query Executor",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -566,7 +566,7 @@
       "title": "Member State",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -666,7 +666,7 @@
       "title": "Replica Query Operations",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1064,8 +1064,8 @@
       "timeRegions": [],
       "title": "Memory",
       "tooltip": {
-        "shared": false,
-        "sort": 0,
+        "shared": true,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1166,7 +1166,7 @@
       "title": "Network I/O",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1264,7 +1264,7 @@
       "title": "Oplog Lag",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1362,7 +1362,7 @@
       "title": "Oplog Size",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1477,7 +1477,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{ db }}/{{coll}}",
+          "legendFormat": "{{coll}}",
           "refId": "A",
           "step": 240
         }
@@ -1487,7 +1487,7 @@
       "title": "Collection Size",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1576,7 +1576,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{ db }}/{{coll}}",
+          "legendFormat": "{{coll}}",
           "refId": "A",
           "step": 240
         }
@@ -1586,7 +1586,7 @@
       "title": "Collection Size - Memory",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1675,7 +1675,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{ db }}/{{coll}}/{{index}}",
+          "legendFormat": "{{coll}}/{{index}}",
           "refId": "A",
           "step": 240
         }
@@ -1685,7 +1685,7 @@
       "title": "Index Size",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1800,7 +1800,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{ database }} / {{collection}} / {{ type }}",
+          "legendFormat": "{{collection}} / {{ type }}",
           "refId": "A",
           "step": 240
         }
@@ -1810,7 +1810,7 @@
       "title": "Operations Count Rate",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1899,7 +1899,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{ database }} / {{collection}} / {{ type }}",
+          "legendFormat": "{{collection}} / {{ type }}",
           "refId": "A",
           "step": 240
         }
@@ -1909,7 +1909,7 @@
       "title": "Operations Time Rate",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -2091,7 +2091,7 @@
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 2,
         "type": "query"
       },
       {
@@ -2118,7 +2118,7 @@
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 2,
         "type": "query"
       },
       {
@@ -2145,7 +2145,7 @@
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 2,
         "type": "query"
       }
     ]
