@@ -3,7 +3,7 @@ fullnameOverride: ""
 
 image:
   repository: mongo
-  tag: 4.4.0
+  tag: 4.4.17
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
@@ -267,6 +267,7 @@ backup:
   concurrencyPolicy: Forbid
   image:
     repository: "hypertrace/mongodb-backup"
+    tag: ""
     pullPolicy: "IfNotPresent"
   imagePullSecrets: []
   mongodb:

@@ -31,7 +31,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: {{ include "mongodb.fullname" . }}-backup
-              image: {{ .Values.backup.image.repository }}:{{ .Chart.Version }}
+              image: {{ .Values.backup.image.repository }}:{{ default .Chart.Version .Values.backup.image.tag }}
               imagePullPolicy: {{ .Values.backup.image.pullPolicy }}
               command: ["/bin/sh", "-cx"]
               args:
