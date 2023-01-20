@@ -1,6 +1,6 @@
 apiVersion: v2
 name: mongodb
 version: 0.1.0
-appVersion: 4.4.17
+appVersion: 4.4.18
 description: MongoDB helm chart
 type: application
