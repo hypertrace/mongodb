@@ -3,7 +3,7 @@ fullnameOverride: ""
 
 image:
   repository: mongo
-  tag: 4.4.17
+  tag: 4.4.18
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
@@ -112,6 +112,10 @@ affinityArbiter: {}
 
 ## Tolerations
 tolerations: []
+
+## Host Network
+hostNetwork: false
+hostNetworkArbiter: false
 
 ## updateStrategy for MongoDB Primary, Secondary and Arbitrer statefulsets
 updateStrategy:
