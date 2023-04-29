@@ -1,6 +1,6 @@
 # MongoDB was last available in the 3.9 release
 # https://pkgs.alpinelinux.org/packages?name=mongodb&branch=v3.9
-FROM alpine:3.9
+FROM alpine:3.13.7
 
 LABEL MAINTAINER Hypertrace "https://www.hypertrace.org/"
 
