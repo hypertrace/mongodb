@@ -44,18 +44,34 @@ spec:
         - name: {{ template "mongodb.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-          args:
-            - "--config"
-            - "/etc/mongodb/mongodb.conf"
+          # args:
+          #   - "--config"
+          #   - "/etc/mongodb/mongodb.conf"
           env:
             {{- if .Values.usePassword }}
             - name: MONGO_INITDB_ROOT_USERNAME
               value: {{ .Values.mongodbRootUsername }}
+            - name: MONGO_INITDB_DATABASE
+              value: admin
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-root-password
+            - name: MONGO_INITDB_SERVICE_USERNAME
+              value: {{ .Values.mongoServiceUsername }}
+            - name: MONGO_INITDB_SERVICE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-service-password
+            - name: MONGO_INITDB_DEVELOPER_USERNAME
+              value: {{ .Values.mongoDeveloperUsername }}
+            - name: MONGO_INITDB_DEVELOPER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-developer-password
             {{- end }}
           ports:
             - name: mongo
@@ -90,8 +106,10 @@ spec:
             - name: mongo-persistent-storage
               mountPath: {{ .Values.persistence.mountPath }}
               subPath: {{ .Values.persistence.subPath }}
-            - name: config
-              mountPath: /etc/mongodb
+            # - name: config
+            #   mountPath: /etc/mongodb
+            - name: user-config
+              mountPath: "/docker-entrypoint-initdb.d"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
@@ -119,6 +137,9 @@ spec:
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
+        - name: user-config
+          configMap:
+            name: "mongodb-user-configmap" 
   volumeClaimTemplates:
     - metadata:
         name: mongo-persistent-storage

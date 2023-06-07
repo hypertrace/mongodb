@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-user-configmap
+data:
+    mongo-users.js: |
+      print("Started Adding the Users.");
+      db = db.getSiblingDB("admin");
+
+      // works for version < 5.x.x (based on mongo version 4.4.18)
+      const mongo_root_password = _getEnv('MONGO_INITDB_ROOT_PASSWORD');
+      const mongo_service_password = _getEnv('MONGO_INITDB_SERVICE_PASSWORD');
+      const mongo_developer_password = _getEnv('MONGO_INITDB_DEVELOPER_PASSWORD');
+      
+      db.auth('{{ .Values.mongodbRootUsername }}', mongo_root_password)
+
+
+      // Check if the service user already exists
+      if (!db.getUser('{{ .Values.mongoServiceUsername }}')) {
+      // Create service user with readWrite role on all databases
+      db.createUser({
+        user: '{{ .Values.mongoServiceUsername }}',
+        pwd: mongo_service_password,
+        roles: [
+          { role: 'readWriteAnyDatabase', db: 'admin' }
+        ]
+      });
+      print("Service user created.");
+      } else {
+      print("Service user already exists.");
+      }
+
+      // Check if the developer user already exists
+      if (!db.getUser('{{ .Values.mongoDeveloperUsername }}')) {
+      // Create developer user with readOnly role on all databases
+      db.createUser({
+        user: '{{ .Values.mongoDeveloperUsername }}',
+        pwd: mongo_developer_password,
+        roles: [
+          { role: 'readAnyDatabase', db: 'admin' }
+        ]
+      });
+      print("Developer user created.");
+      } else {
+      print("Developer user already exists.");
+      }
