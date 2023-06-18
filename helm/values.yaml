@@ -13,15 +13,15 @@ serviceAccount:
   name: ""
 
 ## Enable authentication (disabling till the backward compatibility is achieved)
-usePassword: false
+usePassword: true
 
 ## MongoDB admin password
 mongodbRootUsername: root
-mongodbRootPassword: "abrakadabra"
+mongodbRootPassword: ""
 mongoServiceUsername: "service-user-mongo"
-mongoServicePassword: "service-user-password1"
+mongoServicePassword: ""
 mongoDeveloperUsername: "developer-user-mongo"
-mongoDeveloperPassword: "developer-user-password1"
+mongoDeveloperPassword: ""
 
 
 ## Pod Security Context
