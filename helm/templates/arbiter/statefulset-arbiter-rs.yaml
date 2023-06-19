@@ -67,6 +67,20 @@ spec:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-root-password
+            - name: MONGO_INITDB_SERVICE_USERNAME
+              value: {{ .Values.mongoServiceUsername }}
+            - name: MONGO_INITDB_SERVICE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-service-password
+            - name: MONGO_INITDB_DEVELOPER_USERNAME
+              value: {{ .Values.mongoDeveloperUsername }}
+            - name: MONGO_INITDB_DEVELOPER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-developer-password
             - name: MONGODB_REPLICA_SET_KEY
               valueFrom:
                 secretKeyRef:

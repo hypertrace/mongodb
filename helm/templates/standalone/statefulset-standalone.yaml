@@ -44,9 +44,9 @@ spec:
         - name: {{ template "mongodb.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-          # args:
-          #   - "--config"
-          #   - "/etc/mongodb/mongodb.conf"
+          args:
+            - "--config"
+            - "/etc/mongodb/mongodb.conf"
           env:
             {{- if .Values.usePassword }}
             - name: MONGO_INITDB_ROOT_USERNAME
@@ -106,8 +106,8 @@ spec:
             - name: mongo-persistent-storage
               mountPath: {{ .Values.persistence.mountPath }}
               subPath: {{ .Values.persistence.subPath }}
-            # - name: config
-            #   mountPath: /etc/mongodb
+            - name: config
+              mountPath: /etc/mongodb
             - name: user-config
               mountPath: "/docker-entrypoint-initdb.d"
           resources:
