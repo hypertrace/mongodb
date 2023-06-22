@@ -49,25 +49,25 @@ spec:
             - "/etc/mongodb/mongodb.conf"
           env:
             {{- if .Values.usePassword }}
-            - name: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_ROOT_USER_USERNAME
               value: {{ .Values.mongodbRootUsername }}
             - name: MONGO_INITDB_DATABASE
               value: admin
-            - name: MONGO_INITDB_ROOT_PASSWORD
+            - name: MONGO_ROOT_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-root-password
-            - name: MONGO_INITDB_SERVICE_USERNAME
+            - name: MONGO_SERVICE_USER_USERNAME
               value: {{ .Values.mongoServiceUsername }}
-            - name: MONGO_INITDB_SERVICE_PASSWORD
+            - name: MONGO_SERVICE_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-service-password
-            - name: MONGO_INITDB_DEVELOPER_USERNAME
+            - name: MONGO_DEVELOPER_USER_USERNAME
               value: {{ .Values.mongoDeveloperUsername }}
-            - name: MONGO_INITDB_DEVELOPER_PASSWORD
+            - name: MONGO_DEVELOPER_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}

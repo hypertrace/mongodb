@@ -7,40 +7,29 @@ data:
       print("Started Adding the Users.");
       db = db.getSiblingDB("admin");
 
+      // Function to create a user if it doesn't exist
+      function createUserIfNotExists(username, password, role) {
+        if (!db.getUser(username)) {
+          db.createUser({
+            user: username,
+            pwd: password,
+            roles: [
+              { role: role, db: 'admin' }
+            ]
+          });
+          print(username + " user created.");
+        } else {
+          print(username + " user already exists.");
+        }
+      }
+
       // works for version < 5.x.x (based on mongo version 4.4.18)
-      const mongo_root_password = _getEnv('MONGO_INITDB_ROOT_PASSWORD');
-      const mongo_service_password = _getEnv('MONGO_INITDB_SERVICE_PASSWORD');
-      const mongo_developer_password = _getEnv('MONGO_INITDB_DEVELOPER_PASSWORD');
-      
-      db.auth('{{ .Values.mongodbRootUsername }}', mongo_root_password)
+      const mongo_root_password = _getEnv('MONGO_ROOT_USER_PASSWORD');
+      const mongo_service_password = _getEnv('MONGO_SERVICE_USER_PASSWORD');
+      const mongo_developer_password = _getEnv('MONGO_DEVELOPER_USER_PASSWORD');
 
+      // Check if the service user already exists and Create service user with readWrite role on all databases
+      createUserIfNotExists('{{ .Values.mongoServiceUsername }}', mongo_service_password, 'readWriteAnyDatabase');
 
-      // Check if the service user already exists
-      if (!db.getUser('{{ .Values.mongoServiceUsername }}')) {
-      // Create service user with readWrite role on all databases
-      db.createUser({
-        user: '{{ .Values.mongoServiceUsername }}',
-        pwd: mongo_service_password,
-        roles: [
-          { role: 'readWriteAnyDatabase', db: 'admin' }
-        ]
-      });
-      print("Service user created.");
-      } else {
-      print("Service user already exists.");
-      }
-
-      // Check if the developer user already exists
-      if (!db.getUser('{{ .Values.mongoDeveloperUsername }}')) {
-      // Create developer user with readOnly role on all databases
-      db.createUser({
-        user: '{{ .Values.mongoDeveloperUsername }}',
-        pwd: mongo_developer_password,
-        roles: [
-          { role: 'readAnyDatabase', db: 'admin' }
-        ]
-      });
-      print("Developer user created.");
-      } else {
-      print("Developer user already exists.");
-      }
+      // Check if the developer user already exists and Create developer user with readOnly role on all databases
+      createUserIfNotExists('{{ .Values.mongoDeveloperUsername }}', mongo_developer_password, 'readAnyDatabase');

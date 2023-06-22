@@ -13,7 +13,7 @@ serviceAccount:
   name: ""
 
 ## Enable authentication (disabling till the backward compatibility is achieved)
-usePassword: true
+usePassword: false
 
 ## MongoDB admin password
 mongodbRootUsername: root
