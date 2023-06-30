@@ -7,6 +7,15 @@ data:
       print("Started Adding the Users.");
       db = db.getSiblingDB("admin");
 
+      // works for version < 5.x.x (based on mongo version 4.4.18)
+      const mongo_root_password = _getEnv('MONGO_INITDB_ROOT_PASSWORD');
+      const mongo_service_password = _getEnv('MONGO_SERVICE_PASSWORD');
+      const mongo_developer_password = _getEnv('MONGO_DEVELOPER_PASSWORD');
+
+      if ({{ .Values.config.security.authorization | quote }} == 'enabled') {
+        db.auth('{{ .Values.mongodbRootUsername }}', mongo_root_password)
+      }
+
       // Function to create a user if it doesn't exist
       function createUserIfNotExists(username, password, role) {
         if (!db.getUser(username)) {
@@ -23,10 +32,8 @@ data:
         }
       }
 
-      // works for version < 5.x.x (based on mongo version 4.4.18)
-      const mongo_root_password = _getEnv('MONGO_ROOT_USER_PASSWORD');
-      const mongo_service_password = _getEnv('MONGO_SERVICE_USER_PASSWORD');
-      const mongo_developer_password = _getEnv('MONGO_DEVELOPER_USER_PASSWORD');
+      // Check if the root user already exists and Create root user with all the root permissions 
+      createUserIfNotExists('{{ .Values.mongodbRootUsername }}', mongo_root_password, 'root');
 
       // Check if the service user already exists and Create service user with readWrite role on all databases
       createUserIfNotExists('{{ .Values.mongoServiceUsername }}', mongo_service_password, 'readWriteAnyDatabase');
