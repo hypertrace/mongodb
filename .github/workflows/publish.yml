@@ -1,14 +1,14 @@
 name: Publish artifacts
 on:
-# Will only run when release is published. 
+# Will only run when release is published.
   release:
-    types: 
+    types:
       - created
   workflow_dispatch:
 
 jobs:
   publish-artifacts:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
       - name: Check out code
@@ -27,7 +27,7 @@ jobs:
           restore-keys: |
             gradle-packages-${{ runner.os }}-${{ github.job }}
             gradle-packages-${{ runner.os }}
-            
+
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -36,7 +36,7 @@ jobs:
 
       - name: publish docker image
         uses: hypertrace/github-actions/gradle@main
-        with: 
+        with:
           args: dockerPushImages
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_PUBLISH_USER }}
@@ -44,22 +44,22 @@ jobs:
 
   publish-helm-charts:
     needs: publish-artifacts
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
        # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
       - name: Checkout Repository
         uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0
-   
+
       - name: package and release charts
         uses: hypertrace/github-actions/helm-gcs-publish@main
-        with: 
+        with:
           helm-gcs-credentials: ${{ secrets.HELM_GCS_CREDENTIALS }}
           helm-gcs-repository: ${{ secrets.HELM_GCS_REPOSITORY }}
 
   publish-release-notes:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -67,4 +67,3 @@ jobs:
       - uses: hypertrace/github-actions/release-notes@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          
