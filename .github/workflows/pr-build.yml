@@ -37,21 +37,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_READ_USER }}
           password: ${{ secrets.DOCKERHUB_READ_TOKEN }}
 
-      - name: Build with Gradle
-        uses: hypertrace/github-actions/gradle@main
-        with:
-          args: dockerBuildImages
-
       - name: Determine docker image
         id: docker
         run: |
           echo repository=$(yq e '.image.repository' ./helm/values.yaml) >> $GITHUB_OUTPUT
           echo tag=$(yq e '.image.tag' ./helm/values.yaml) >> $GITHUB_OUTPUT
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Pull Docker Image
         run: docker pull ${{ steps.docker.outputs.repository }}:${{ steps.docker.outputs.tag }}
+
+      - name: Build with Gradle
+        uses: hypertrace/github-actions/gradle@main
+        with:
+          args: dockerBuildImages
 
       - name: Run Trivy vulnerability scanner for mongodb-backup image
         uses: hypertrace/github-actions/trivy-image-scan@main
