@@ -59,9 +59,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             {{- if .Values.usePassword }}
-            - name: MONGO_ROOT_USER_USERNAME
+            - name: {{ eq .Values.config.security.authorization "enabled" | ternary "MONGO_INITDB_ROOT_USERNAME" "MONGO_ROOT_USER_USERNAME" }}
               value: {{ .Values.mongodbRootUsername }}
-            - name: MONGO_ROOT_USER_PASSWORD
+            - name: {{ eq .Values.config.security.authorization "enabled" | ternary "MONGO_INITDB_ROOT_PASSWORD" "MONGO_ROOT_USER_PASSWORD" }}
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}

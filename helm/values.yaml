@@ -14,6 +14,7 @@ serviceAccount:
 
 ## Enable authentication (disabling till the backward compatibility is achieved)
 usePassword: false
+createUsers: false
 
 ## MongoDB admin password
 mongodbRootUsername: root

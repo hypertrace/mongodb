@@ -49,12 +49,9 @@ spec:
             - "/etc/mongodb/mongodb.conf"
           env:
             {{- if .Values.usePassword }}
-
-            - name: MONGO_INITDB_ROOT_USERNAME
+            - name: {{ eq .Values.config.security.authorization "enabled" | ternary "MONGO_INITDB_ROOT_USERNAME" "MONGO_ROOT_USER_USERNAME" }}
               value: {{ .Values.mongodbRootUsername }}
-            - name: MONGO_INITDB_DATABASE
-              value: admin
-            - name: MONGO_INITDB_ROOT_PASSWORD
+            - name: {{ eq .Values.config.security.authorization "enabled" | ternary "MONGO_INITDB_ROOT_PASSWORD" "MONGO_ROOT_USER_PASSWORD" }}
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
