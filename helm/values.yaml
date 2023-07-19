@@ -12,9 +12,8 @@ serviceAccount:
   create: true
   name: ""
 
-## Enable authentication (disabling till the backward compatibility is achieved)
+## Enable authentication
 usePassword: false
-createUsers: false
 
 ## MongoDB admin password
 mongodbRootUsername: root
@@ -23,7 +22,6 @@ mongoServiceUsername: "service-user-mongo"
 mongoServicePassword: ""
 mongoDeveloperUsername: "developer-user-mongo"
 mongoDeveloperPassword: ""
-
 
 ## Pod Security Context
 securityContext:
