@@ -58,7 +58,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{- if and .Values.usePassword }}
+            {{- if .Values.usePassword }}
             - name: MONGO_INITDB_ROOT_USERNAME
               value: {{ .Values.mongodbRootUsername }}
             - name: MONGO_INITDB_ROOT_PASSWORD
