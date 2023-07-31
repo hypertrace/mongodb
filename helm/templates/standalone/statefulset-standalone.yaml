@@ -107,7 +107,7 @@ spec:
             - name: config
               mountPath: /etc/mongodb
             {{- if .Values.usePassword }}
-            - name: user-config
+            - name: init-scripts-config
               mountPath: "/docker-entrypoint-initdb.d"
             {{- end }}
           resources:
@@ -138,9 +138,9 @@ spec:
           configMap:
             name: {{ template "mongodb.fullname" . }}
         {{- if .Values.usePassword }}
-        - name: user-config
+        - name: init-scripts-config
           configMap:
-            name: "mongodb-user-configmap" 
+            name: {{ template "mongodb.fullname" . }}-init-scripts
         {{- end }}
   volumeClaimTemplates:
     - metadata:
