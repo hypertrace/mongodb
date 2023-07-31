@@ -106,8 +106,10 @@ spec:
               subPath: {{ .Values.persistence.subPath }}
             - name: config
               mountPath: /etc/mongodb
+            {{- if .Values.usePassword }}
             - name: user-config
               mountPath: "/docker-entrypoint-initdb.d"
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
@@ -135,9 +137,11 @@ spec:
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
+        {{- if .Values.usePassword }}
         - name: user-config
           configMap:
             name: "mongodb-user-configmap" 
+        {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: mongo-persistent-storage

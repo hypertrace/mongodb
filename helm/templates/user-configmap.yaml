@@ -1,3 +1,4 @@
+{{ if .Values.usePassword -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -35,3 +36,4 @@ data:
 
       // Create developer user with readOnly role on all databases
       createUser(mongo_developer_username, mongo_developer_password, 'readAnyDatabase');
+{{- end }}
