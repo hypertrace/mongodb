@@ -10,6 +10,12 @@ metadata:
   name: {{ template "mongodb.fullname" . }}-init-scripts
 data:
     mongo-users.js: |
+      print("Started Adding the Users.");
+      db = db.getSiblingDB("admin");
+
+      // Authenticate with the Root user
+      db.auth(mongo_root_username, mongo_root_password)
+
       // Function to create a user if it doesn't exist
       function createUser(username, password, role) {
         db.createUser({
@@ -29,12 +35,6 @@ data:
       var mongo_service_password = _getEnv('MONGO_SERVICE_USER_PASSWORD');
       var mongo_developer_username = _getEnv('MONGO_DEVELOPER_USER_USERNAME');
       var mongo_developer_password = _getEnv('MONGO_DEVELOPER_USER_PASSWORD');
-
-      print("Started Adding the Users.");
-      db = db.getSiblingDB("admin");
-
-      // Authenticate with the Root user
-      db.auth(mongo_root_username, mongo_root_password)
 
       // Create service user with readWrite role on all databases
       createUser(mongo_service_username, mongo_service_password, 'readWriteAnyDatabase');
