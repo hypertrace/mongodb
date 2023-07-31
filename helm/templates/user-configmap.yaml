@@ -5,43 +5,33 @@ metadata:
 data:
     mongo-users.js: |
       // Function to create a user if it doesn't exist
-      function createUserIfNotExists(username, password, role) {
-        if (!db.getUser(username)) {
-          db.createUser({
-            user: username,
-            pwd: password,
-            roles: [
-              { role: role, db: 'admin' }
-            ]
-          });
-          print(username + " user created.");
-        } else {
-          print(username + " user already exists.");
-        }
+      function createUser(username, password, role) {
+        db.createUser({
+          user: username,
+          pwd: password,
+          roles: [
+            { role: role, db: 'admin' }
+          ]
+        });
+        print(username + " user created.");
       }
 
-      print("Started Adding the Users.");
-      db = db.getSiblingDB("admin");
-
       // works for version < 5.x.x (based on mongo version 4.4.18)
-      var mongo_root_username = _getEnv('MONGO_ROOT_USER_USERNAME')
-      var mongo_root_password = _getEnv('MONGO_ROOT_USER_PASSWORD');
+      var mongo_root_username = _getEnv('MONGO_INITDB_ROOT_USERNAME')
+      var mongo_root_password = _getEnv('MONGO_INITDB_ROOT_PASSWORD');
       var mongo_service_username = _getEnv('MONGO_SERVICE_USER_USERNAME');
       var mongo_service_password = _getEnv('MONGO_SERVICE_USER_PASSWORD');
       var mongo_developer_username = _getEnv('MONGO_DEVELOPER_USER_USERNAME');
       var mongo_developer_password = _getEnv('MONGO_DEVELOPER_USER_PASSWORD');
 
-      if ({{ .Values.config.security.authorization | quote }} == 'enabled') {
-        var mongo_root_username = _getEnv('MONGO_INITDB_ROOT_USERNAME')
-        var mongo_root_password = _getEnv('MONGO_INITDB_ROOT_PASSWORD');
-        db.auth(mongo_root_username, mongo_root_password)
-      }
+      print("Started Adding the Users.");
+      db = db.getSiblingDB("admin");
 
-      // Check if the root user already exists and Create root user with all the root permissions
-      createUserIfNotExists(mongo_root_username, mongo_root_password, 'root');
+      // Authenticate with the Root user
+      db.auth(mongo_root_username, mongo_root_password)
 
-      // Check if the service user already exists and Create service user with readWrite role on all databases
-      createUserIfNotExists(mongo_service_username, mongo_service_password, 'readWriteAnyDatabase');
+      // Create service user with readWrite role on all databases
+      createUser(mongo_service_username, mongo_service_password, 'readWriteAnyDatabase');
 
-      // Check if the developer user already exists and Create developer user with readOnly role on all databases
-      createUserIfNotExists(mongo_developer_username, mongo_developer_password, 'readAnyDatabase');
+      // Create developer user with readOnly role on all databases
+      createUser(mongo_developer_username, mongo_developer_password, 'readAnyDatabase');
