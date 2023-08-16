@@ -121,8 +121,10 @@ spec:
               subPath: {{ .Values.persistence.subPath }}
             - name: config
               mountPath: /etc/mongodb
+            {{- if eq .Values.config.security.authorization "enabled" }}
             - name: keyfile
               mountPath: /etc/mongodb-keyfile
+            {{- end }}
             - name: init-scripts-config
               mountPath: "/docker-entrypoint-initdb.d"
           resources:
