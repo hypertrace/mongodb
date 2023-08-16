@@ -14,6 +14,7 @@ serviceAccount:
 
 ## Enable authentication
 usePassword: false
+createPasswordsSecret: false
 
 ## MongoDB admin password
 mongodbRootUsername: root
