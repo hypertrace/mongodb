@@ -17,11 +17,11 @@ usePassword: false
 createPasswordsSecret: false
 
 ## MongoDB admin password
-mongodbRootUsername: root
+mongodbRootUsername: ""
 mongodbRootPassword: ""
-mongodbServiceUsername: "service-user-mongo"
+mongodbServiceUsername: ""
 mongodbServicePassword: ""
-mongodbDeveloperUsername: "developer-user-mongo"
+mongodbDeveloperUsername: ""
 mongodbDeveloperPassword: ""
 
 ## Pod Security Context
