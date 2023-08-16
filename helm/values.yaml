@@ -182,16 +182,14 @@ exporter:
   annotations: {}
 
   extraArgs:
-  - --collect.collection
-  - --collect.database
-  - --collect.indexusage
-  - --collect.topmetrics
-  - --collect.connpoolstats
+    - --collect-all       # Collect from all exporters
+    - --discovering-mode  # Collect from all collections and databases
+    - --compatible-mode   # Old metrics are also exposed (used in prometheusrules)
 
   image:
     pullPolicy: IfNotPresent
-    repository: ssheehy/mongodb-exporter
-    tag: 0.10.0
+    repository: percona/mongodb_exporter
+    tag: 0.39.0
 
   imagePullSecrets: []
 
