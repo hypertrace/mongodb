@@ -171,6 +171,7 @@ config:
     verbosity: 0
   security:
     authorization: disabled
+    keyFile: "/etc/mongodb-keyfile/mongodb-replica-set-key"
   net:
     ipv6: false
     bindIpAll: true

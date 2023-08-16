@@ -70,11 +70,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-root-password
-            - name: MONGODB_REPLICA_SET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "mongodb.fullname" . }}
-                  key: mongodb-replica-set-key
             {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
@@ -104,6 +99,8 @@ spec:
               subPath: {{ .Values.persistence.subPath }}
             - name: config
               mountPath: /etc/mongodb
+            - name: keyfile
+              mountPath: /etc/mongodb-keyfile
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -135,4 +132,10 @@ spec:
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
+        - name: keyfile
+          secret:
+            secretName: {{ template "mongodb.fullname" . }}
+            items:
+              - key: mongodb-replica-set-key
+                path: mongodb-replica-set-key
 {{- end }}

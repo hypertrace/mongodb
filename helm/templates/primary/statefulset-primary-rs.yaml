@@ -89,11 +89,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-developer-password
-            - name: MONGODB_REPLICA_SET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "mongodb.fullname" . }}
-                  key: mongodb-replica-set-key
             {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
@@ -126,6 +121,8 @@ spec:
               subPath: {{ .Values.persistence.subPath }}
             - name: config
               mountPath: /etc/mongodb
+            - name: keyfile
+              mountPath: /etc/mongodb-keyfile
             - name: init-scripts-config
               mountPath: "/docker-entrypoint-initdb.d"
           resources:
@@ -164,6 +161,12 @@ spec:
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
+        - name: keyfile
+          secret:
+            secretName: {{ template "mongodb.fullname" . }}
+            items:
+              - key: mongodb-replica-set-key
+                path: mongodb-replica-set-key
         - name: init-scripts-config
           configMap:
             name: {{ template "mongodb.fullname" . }}-init-scripts
