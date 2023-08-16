@@ -28,6 +28,18 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            {{- if eq .Values.config.security.authorization "enabled" }}
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-root-username
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-root-password
+            {{- end }}
           volumeMounts:
             - name: {{ include "mongodb.name" . }}-script-config
               mountPath: /scripts
