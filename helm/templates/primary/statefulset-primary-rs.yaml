@@ -43,6 +43,20 @@ spec:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      initContainers:
+        - name: copy-keyfile
+          image: busybox
+          command: ['sh', '-c']
+          args:
+            - |
+              cp /keyfile/mongodb-replica-set-key /etc/mongodb-keyfile/mongodb-replica-set-key
+              chown 999:999 /etc/mongodb-keyfile/mongodb-replica-set-key
+              chmod 0400 /etc/mongodb-keyfile/mongodb-replica-set-key
+          volumeMounts:
+            - name: keyfile-copy
+              mountPath: /etc/mongodb-keyfile
+            - name: keyfile
+              mountPath: /keyfile
       containers:
         - name: {{ template "mongodb.name" . }}-primary
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -122,7 +136,7 @@ spec:
             - name: config
               mountPath: /etc/mongodb
             {{- if eq .Values.config.security.authorization "enabled" }}
-            - name: keyfile
+            - name: keyfile-copy
               mountPath: /etc/mongodb-keyfile
             {{- end }}
             - name: init-scripts-config
@@ -163,9 +177,12 @@ spec:
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
+        - name: keyfile-copy
+          emptyDir: {}
         - name: keyfile
           secret:
             secretName: {{ template "mongodb.fullname" . }}
+            defaultMode: 0400
             items:
               - key: mongodb-replica-set-key
                 path: mongodb-replica-set-key
