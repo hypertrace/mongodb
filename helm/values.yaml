@@ -18,10 +18,10 @@ usePassword: false
 ## MongoDB admin password
 mongodbRootUsername: root
 mongodbRootPassword: ""
-mongoServiceUsername: "service-user-mongo"
-mongoServicePassword: ""
-mongoDeveloperUsername: "developer-user-mongo"
-mongoDeveloperPassword: ""
+mongodbServiceUsername: "service-user-mongo"
+mongodbServicePassword: ""
+mongodbDeveloperUsername: "developer-user-mongo"
+mongodbDeveloperPassword: ""
 
 ## Pod Security Context
 securityContext:

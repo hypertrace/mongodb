@@ -61,7 +61,10 @@ spec:
                   fieldPath: metadata.name
             {{- if .Values.usePassword }}
             - name: MONGO_INITDB_ROOT_USERNAME
-              value: {{ .Values.mongodbRootUsername }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-root-username
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:

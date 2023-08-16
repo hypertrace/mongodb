@@ -1,4 +1,3 @@
-{{ if .Values.usePassword -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,36 +8,37 @@ metadata:
     release: {{ .Release.Name }}
   name: {{ template "mongodb.fullname" . }}-init-scripts
 data:
-    mongo-users.js: |
-      print("Started Adding the Users.");
-      db = db.getSiblingDB("admin");
+  {{ if .Values.usePassword -}}
+  mongo-users.js: |
+    // Function to create a user
+    function createUser(username, password, role) {
+      db.createUser({
+        user: username,
+        pwd: password,
+        roles: [
+          { role: role, db: 'admin' }
+        ]
+      });
+      print(username + " user created.");
+    }
 
-      // Authenticate with the Root user
-      db.auth(mongo_root_username, mongo_root_password)
+    // works for version < 5.x.x (based on mongo version 4.4.18)
+    var mongo_root_username = _getEnv('MONGO_INITDB_ROOT_USERNAME')
+    var mongo_root_password = _getEnv('MONGO_INITDB_ROOT_PASSWORD');
+    var mongo_service_username = _getEnv('MONGO_SERVICE_USERNAME');
+    var mongo_service_password = _getEnv('MONGO_SERVICE_PASSWORD');
+    var mongo_developer_username = _getEnv('MONGO_DEVELOPER_USERNAME');
+    var mongo_developer_password = _getEnv('MONGO_DEVELOPER_PASSWORD');
 
-      // Function to create a user if it doesn't exist
-      function createUser(username, password, role) {
-        db.createUser({
-          user: username,
-          pwd: password,
-          roles: [
-            { role: role, db: 'admin' }
-          ]
-        });
-        print(username + " user created.");
-      }
+    print("Started Adding the Users.");
+    db = db.getSiblingDB("admin");
 
-      // works for version < 5.x.x (based on mongo version 4.4.18)
-      var mongo_root_username = _getEnv('MONGO_INITDB_ROOT_USERNAME')
-      var mongo_root_password = _getEnv('MONGO_INITDB_ROOT_PASSWORD');
-      var mongo_service_username = _getEnv('MONGO_SERVICE_USER_USERNAME');
-      var mongo_service_password = _getEnv('MONGO_SERVICE_USER_PASSWORD');
-      var mongo_developer_username = _getEnv('MONGO_DEVELOPER_USER_USERNAME');
-      var mongo_developer_password = _getEnv('MONGO_DEVELOPER_USER_PASSWORD');
+    // Authenticate with the Root user
+    db.auth(mongo_root_username, mongo_root_password)
 
-      // Create service user with readWrite role on all databases
-      createUser(mongo_service_username, mongo_service_password, 'readWriteAnyDatabase');
+    // Create service user with readWrite role on all databases
+    createUser(mongo_service_username, mongo_service_password, 'readWriteAnyDatabase');
 
-      // Create developer user with readOnly role on all databases
-      createUser(mongo_developer_username, mongo_developer_password, 'readAnyDatabase');
-{{- end }}
+    // Create developer user with readOnly role on all databases
+    createUser(mongo_developer_username, mongo_developer_password, 'readAnyDatabase');
+  {{- end }}

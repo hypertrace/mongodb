@@ -60,22 +60,31 @@ spec:
                   fieldPath: metadata.name
             {{- if .Values.usePassword }}
             - name: MONGO_INITDB_ROOT_USERNAME
-              value: {{ .Values.mongodbRootUsername }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-root-username
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-root-password
-            - name: MONGO_SERVICE_USER_USERNAME
-              value: {{ .Values.mongoServiceUsername }}
-            - name: MONGO_SERVICE_USER_PASSWORD
+            - name: MONGO_SERVICE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-service-username
+            - name: MONGO_SERVICE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-service-password
-            - name: MONGO_DEVELOPER_USER_USERNAME
-              value: {{ .Values.mongoDeveloperUsername }}
-            - name: MONGO_DEVELOPER_USER_PASSWORD
+            - name: MONGO_DEVELOPER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb.fullname" . }}
+                  key: mongodb-developer-username
+            - name: MONGO_DEVELOPER_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
@@ -117,10 +126,8 @@ spec:
               subPath: {{ .Values.persistence.subPath }}
             - name: config
               mountPath: /etc/mongodb
-            {{- if .Values.usePassword }}
             - name: init-scripts-config
               mountPath: "/docker-entrypoint-initdb.d"
-            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
@@ -157,11 +164,9 @@ spec:
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
-        {{- if .Values.usePassword }}
         - name: init-scripts-config
           configMap:
             name: {{ template "mongodb.fullname" . }}-init-scripts
-        {{- end }}
   {{- if not .Values.persistence.existingClaim }}
   volumeClaimTemplates:
     - metadata:
