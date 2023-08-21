@@ -29,7 +29,7 @@ data:
       local port="$2"
       local command="$3"
 
-      if [ -z $ROOT_USERNAME ]; then
+      if [ -z "$ROOT_USERNAME" -a -z "$ROOT_PASSWORD" ]; then
         mongo --host $host --port $port --eval "$command"
       else
         mongo --host $host --port $port --username "$ROOT_USERNAME" --password "$ROOT_PASSWORD" --eval "$command"
