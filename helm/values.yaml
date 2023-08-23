@@ -12,10 +12,8 @@ serviceAccount:
   create: true
   name: ""
 
-## Enable authentication
+## MongoDB user passwords
 createPasswordsSecret: false
-
-## MongoDB admin password
 mongodbRootUsername: ""
 mongodbRootPassword: ""
 mongodbServiceUsername: ""
