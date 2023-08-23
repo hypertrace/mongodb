@@ -51,9 +51,9 @@ spec:
           command: ['sh', '-c']
           args:
             - |
-              cp /keyfile/mongodb-replica-set-key /etc/mongodb-keyfile/mongodb-replica-set-key
-              chown 999:999 /etc/mongodb-keyfile/mongodb-replica-set-key
-              chmod 0400 /etc/mongodb-keyfile/mongodb-replica-set-key
+              cp /keyfile/mongodb-replica-set-key {{ .Values.config.security.keyFile | quote }}
+              chown 999:999 {{ .Values.config.security.keyFile | quote }}
+              chmod 0400 {{ .Values.config.security.keyFile | quote }}
           volumeMounts:
             - name: keyfile-copy
               mountPath: /etc/mongodb-keyfile
