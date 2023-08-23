@@ -43,9 +43,11 @@ spec:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if (eq .Values.config.security.authorization "enabled") }}
       initContainers:
         - name: copy-keyfile
-          image: busybox
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ['sh', '-c']
           args:
             - |
@@ -57,6 +59,7 @@ spec:
               mountPath: /etc/mongodb-keyfile
             - name: keyfile
               mountPath: /keyfile
+      {{- end }}
       containers:
         - name: {{ template "mongodb.name" . }}-primary
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -72,7 +75,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{- if .Values.usePassword }}
+            {{- if (eq .Values.config.security.authorization "enabled") }}
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -177,6 +180,7 @@ spec:
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
+        {{- if (eq .Values.config.security.authorization "enabled") }}
         - name: keyfile-copy
           emptyDir: {}
         - name: keyfile
@@ -186,6 +190,7 @@ spec:
             items:
               - key: mongodb-replica-set-key
                 path: mongodb-replica-set-key
+        {{- end }}
         - name: init-scripts-config
           configMap:
             name: {{ template "mongodb.fullname" . }}-init-scripts

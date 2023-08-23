@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
   name: {{ template "mongodb.fullname" . }}-init-scripts
 data:
-  {{ if .Values.usePassword -}}
+  {{ if (eq .Values.config.security.authorization "enabled") -}}
   mongo-users.js: |
     // Function to create a user
     function createUser(username, password, role) {

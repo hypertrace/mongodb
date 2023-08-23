@@ -48,7 +48,7 @@ spec:
             - "--config"
             - "/etc/mongodb/mongodb.conf"
           env:
-            {{- if .Values.usePassword }}
+            {{- if (eq .Values.config.security.authorization "enabled") }}
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
