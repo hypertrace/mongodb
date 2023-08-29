@@ -13,7 +13,7 @@ serviceAccount:
   name: ""
 
 ## MongoDB user passwords
-createPasswordsSecret: false
+createUsers: false
 mongodbRootUsername: ""
 mongodbRootPassword: ""
 mongodbServiceUsername: ""

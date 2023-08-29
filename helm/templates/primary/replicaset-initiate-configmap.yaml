@@ -18,9 +18,11 @@ data:
     SECONDARY_COUNT={{ int .Values.replicaSet.replicas.secondary }}
     ARBITER_COUNT={{ int .Values.replicaSet.replicas.arbiter }}
     PORT={{ int .Values.service.port }}
+    CREATE_USERS={{ .Values.createUsers | quote }}
 
     PRIMARY_NODE="${FULLNAME}-primary-0.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local"
 
+    AUTH_ENABLED="${MONGO_AUTHENTICATION_ENABLED}"
     ROOT_USERNAME="${MONGO_ROOT_USERNAME}"
     ROOT_PASSWORD="${MONGO_ROOT_PASSWORD}"
 
@@ -29,10 +31,32 @@ data:
       local port="$2"
       local command="$3"
 
-      if [ -z "$ROOT_USERNAME" -a -z "$ROOT_PASSWORD" ]; then
-        mongo --host $host --port $port --eval "$command"
-      else
+      if [[ "$AUTH_ENABLED" == "true" ]]; then
         mongo --host $host --port $port --username "$ROOT_USERNAME" --password "$ROOT_PASSWORD" --eval "$command"
+      else
+        mongo --host $host --port $port --eval "$command"
+      fi
+
+      if [ $? -ne 0 ]; then
+        echo "failed to connect to mongo"
+        exit 1
+      fi
+    }
+
+    # JS script will check if ENV variable is set and create users
+    mongo_create_users() {
+      if [[ "$CREATE_USERS" == "true" ]]; then
+        CONN_STRING="mongodb://${PRIMARY_NODE}:${PORT}"
+        i=0
+        while [ $i -lt $SECONDARY_COUNT ]; do
+          SECONDARY_NODE="${FULLNAME}-secondary-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local"
+          CONN_STRING="${CONN_STRING},${SECONDARY_NODE}:${PORT}"
+          i=$(expr $i + 1)
+        done
+        CONN_STRING="${CONN_STRING}/admin?replicaSet=${RS_NAME}"
+
+        echo "Connection String: $CONN_STRING"
+        mongo "$CONN_STRING" /setup-scripts/mongo-users.js
       fi
     }
 
@@ -83,6 +107,8 @@ data:
     mongo_check_auth "$PRIMARY_NODE" "$PORT" "rs.status()" | grep -q "\"ok\" : 1"
     if [ $? -eq 0 ]; then
       echo "Replica Set $RS_NAME is already initialized"
+      # Run create users script
+      mongo_create_users
       exit 0
     fi
 
@@ -111,4 +137,6 @@ data:
 
     # print replicaset status
     mongo_check_auth "$PRIMARY_NODE" "$PORT" "rs.status()"
+    # Run create users script
+    mongo_create_users
 {{- end }}

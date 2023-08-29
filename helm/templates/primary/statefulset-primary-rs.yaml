@@ -86,26 +86,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "mongodb.fullname" . }}
                   key: mongodb-root-password
-            - name: MONGO_SERVICE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "mongodb.fullname" . }}
-                  key: mongodb-service-username
-            - name: MONGO_SERVICE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "mongodb.fullname" . }}
-                  key: mongodb-service-password
-            - name: MONGO_DEVELOPER_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "mongodb.fullname" . }}
-                  key: mongodb-developer-username
-            - name: MONGO_DEVELOPER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "mongodb.fullname" . }}
-                  key: mongodb-developer-password
             {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
@@ -142,8 +122,6 @@ spec:
             - name: keyfile-copy
               mountPath: /etc/mongodb-keyfile
             {{- end }}
-            - name: init-scripts-config
-              mountPath: "/docker-entrypoint-initdb.d"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
@@ -191,9 +169,6 @@ spec:
               - key: mongodb-replica-set-key
                 path: mongodb-replica-set-key
         {{- end }}
-        - name: init-scripts-config
-          configMap:
-            name: {{ template "mongodb.fullname" . }}-init-scripts
   {{- if not .Values.persistence.existingClaim }}
   volumeClaimTemplates:
     - metadata:
