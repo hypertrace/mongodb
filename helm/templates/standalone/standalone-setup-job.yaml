@@ -25,9 +25,8 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              POD_NAME="{{ template "mongodb.fullname" . }}-0"
               SVC_NAME="{{ template "mongodb.serviceName" . }}"
-              HOST="${POD_NAME}.${SVC_NAME}.${NAMESPACE}.svc.cluster.local"
+              HOST="${SVC_NAME}.${NAMESPACE}.svc.cluster.local"
               PORT={{ int .Values.service.port }}
               CONN_STRING="mongodb://${HOST}:${PORT}/admin"
 

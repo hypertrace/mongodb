@@ -42,7 +42,7 @@ data:
         mongo_developer_username == "" ||
         mongo_developer_password == "") {
       print("ENV variables not set. Skipping creating users.")
-      return
+      quit()
     }
 
     print("Started Adding the Users.");

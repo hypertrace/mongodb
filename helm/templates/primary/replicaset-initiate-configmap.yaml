@@ -10,7 +10,7 @@ metadata:
     heritage: "{{ .Release.Service }}"
 data:
   replicaset.sh: |
-    #!/bin/sh -x
+    #!/bin/sh
 
     RS_NAME={{ .Values.replicaSet.name | quote }}
     FULLNAME={{ template "mongodb.fullname" . }}
@@ -31,7 +31,7 @@ data:
       local port="$2"
       local command="$3"
 
-      if [[ "$AUTH_ENABLED" == "true" ]]; then
+      if [ -n "$AUTH_ENABLED" -a "$AUTH_ENABLED" = "true" ]; then
         mongo --host $host --port $port --username "$ROOT_USERNAME" --password "$ROOT_PASSWORD" --eval "$command"
       else
         mongo --host $host --port $port --eval "$command"
@@ -45,7 +45,7 @@ data:
 
     # JS script will check if ENV variable is set and create users
     mongo_create_users() {
-      if [[ "$CREATE_USERS" == "true" ]]; then
+      if [ "$CREATE_USERS" = "true" ]; then
         CONN_STRING="mongodb://${PRIMARY_NODE}:${PORT}"
         i=0
         while [ $i -lt $SECONDARY_COUNT ]; do
