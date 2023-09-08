@@ -36,32 +36,56 @@ spec:
             - name: MONGO_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-root-username
             - name: MONGO_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-root-password
             - name: MONGO_SERVICE_USERNAME
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-service-username
             - name: MONGO_SERVICE_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-service-password
             - name: MONGO_DEVELOPER_USERNAME
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-developer-username
             - name: MONGO_DEVELOPER_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-developer-password
             {{- end }}
           volumeMounts:

@@ -79,12 +79,20 @@ spec:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-root-username
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-root-password
             {{- end }}
           {{- if .Values.livenessProbe.enabled }}

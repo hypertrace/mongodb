@@ -12,8 +12,17 @@ serviceAccount:
   create: true
   name: ""
 
-## MongoDB user passwords
+## Run job to create different mongo users
 createUsers: false
+
+## Use a user provided secret for mongodb usernames and passwords
+### If false, a default secret will be generated
+useExistingSecret:
+  enabled: false
+  name: ""
+
+## MongoDB user passwords
+### Used when existing secret is not provided
 mongodbRootUsername: ""
 mongodbRootPassword: ""
 mongodbServiceUsername: ""
