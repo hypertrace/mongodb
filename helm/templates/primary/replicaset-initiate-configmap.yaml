@@ -10,7 +10,7 @@ metadata:
     heritage: "{{ .Release.Service }}"
 data:
   replicaset.sh: |
-    #!/bin/sh -x
+    #!/bin/sh
 
     RS_NAME={{ .Values.replicaSet.name | quote }}
     FULLNAME={{ template "mongodb.fullname" . }}
@@ -18,8 +18,47 @@ data:
     SECONDARY_COUNT={{ int .Values.replicaSet.replicas.secondary }}
     ARBITER_COUNT={{ int .Values.replicaSet.replicas.arbiter }}
     PORT={{ int .Values.service.port }}
+    CREATE_USERS={{ .Values.createUsers | quote }}
 
     PRIMARY_NODE="${FULLNAME}-primary-0.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local"
+
+    AUTH_ENABLED="${MONGO_AUTHENTICATION_ENABLED}"
+    ROOT_USERNAME="${MONGO_ROOT_USERNAME}"
+    ROOT_PASSWORD="${MONGO_ROOT_PASSWORD}"
+
+    mongo_check_auth(){
+      local host="$1"
+      local port="$2"
+      local command="$3"
+
+      if [ "$AUTH_ENABLED" = "true" ]; then
+        mongo --host $host --port $port --username "$ROOT_USERNAME" --password "$ROOT_PASSWORD" --eval "$command"
+      else
+        mongo --host $host --port $port --eval "$command"
+      fi
+
+      if [ $? -ne 0 ]; then
+        echo "failed to connect to mongo"
+        exit 1
+      fi
+    }
+
+    # JS script will check if ENV variable is set and create users
+    mongo_create_users() {
+      if [ "$CREATE_USERS" = "true" ]; then
+        CONN_STRING="mongodb://${PRIMARY_NODE}:${PORT}"
+        i=0
+        while [ $i -lt $SECONDARY_COUNT ]; do
+          SECONDARY_NODE="${FULLNAME}-secondary-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local"
+          CONN_STRING="${CONN_STRING},${SECONDARY_NODE}:${PORT}"
+          i=$(expr $i + 1)
+        done
+        CONN_STRING="${CONN_STRING}/admin?replicaSet=${RS_NAME}"
+
+        echo "Connection String: $CONN_STRING"
+        mongo "$CONN_STRING" /setup-scripts/mongo-users.js
+      fi
+    }
 
     wait_for_mongo(){
       local host="$1"
@@ -64,15 +103,17 @@ data:
     sleep 20
 
     # check if resplica set is already initialized or not.
-    mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.status()"
-    mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.status()" | grep -q "\"ok\" : 1"
+    mongo_check_auth "$PRIMARY_NODE" "$PORT" "rs.status()"
+    mongo_check_auth "$PRIMARY_NODE" "$PORT" "rs.status()" | grep -q "\"ok\" : 1"
     if [ $? -eq 0 ]; then
       echo "Replica Set $RS_NAME is already initialized"
+      # Run create users script
+      mongo_create_users
       exit 0
     fi
 
     # initialize replica set with primary node
-    mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.initiate({_id: \"$RS_NAME\", version: 1, members: [{ _id: 0, host: \"$PRIMARY_NODE:$PORT\", priority: 10 }]})"
+    mongo_check_auth "$PRIMARY_NODE" "$PORT" "rs.initiate({_id: \"$RS_NAME\", version: 1, members: [{ _id: 0, host: \"$PRIMARY_NODE:$PORT\", priority: 10 }]})"
     if [ $? -ne 0 ]; then
       echo "failed to initiate resplica set $RS_NAME"
       exit 1
@@ -82,18 +123,20 @@ data:
     # add secondary nodes
     i=0
     while [ $i -lt $SECONDARY_COUNT ]; do
-      mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.add({host: \"${FULLNAME}-secondary-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local:$PORT\", priority: 1})"
+      mongo_check_auth "$PRIMARY_NODE" "$PORT" "rs.add({host: \"${FULLNAME}-secondary-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local:$PORT\", priority: 1})"
       i=$(expr $i + 1)
     done
 
     # add arbiter nodes
     i=0
     while [ $i -lt $ARBITER_COUNT ]; do
-      mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.addArb(\"${FULLNAME}-arbiter-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local:$PORT\")"
+      mongo_check_auth "$PRIMARY_NODE" "$PORT" "rs.addArb(\"${FULLNAME}-arbiter-${i}.${SERVICE_NAME}.${NAMESPACE}.svc.cluster.local:$PORT\")"
       i=$(expr $i + 1)
     done
     sleep 10
 
     # print replicaset status
-    mongo --host "$PRIMARY_NODE" --port "$PORT" --eval "rs.status()"
+    mongo_check_auth "$PRIMARY_NODE" "$PORT" "rs.status()"
+    # Run create users script
+    mongo_create_users
 {{- end }}

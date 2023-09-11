@@ -12,12 +12,23 @@ serviceAccount:
   create: true
   name: ""
 
-## Enable authentication
-usePassword: false
+## Run job to create different mongo users
+createUsers: false
 
-## MongoDB admin password
-mongodbRootUsername: root
+## Use a user provided secret for mongodb usernames and passwords
+### If false, a default secret will be generated
+useExistingSecret:
+  enabled: false
+  name: "mongodb-credentials"
+
+## MongoDB user passwords
+### Used when existing secret is not provided
+mongodbRootUsername: ""
 mongodbRootPassword: ""
+mongodbServiceUsername: ""
+mongodbServicePassword: ""
+mongodbDeveloperUsername: ""
+mongodbDeveloperPassword: ""
 
 ## Pod Security Context
 securityContext:
@@ -166,6 +177,7 @@ config:
     verbosity: 0
   security:
     authorization: disabled
+    keyFile: "/etc/mongodb-keyfile/mongodb-replica-set-key"
   net:
     ipv6: false
     bindIpAll: true

@@ -109,6 +109,9 @@ data:
     # security options
     security:
       authorization: {{ .Values.config.security.authorization }}
+      {{- if and .Values.replicaSet.enabled (eq .Values.config.security.authorization "enabled") }}
+      keyFile: {{ .Values.config.security.keyFile }}
+      {{- end }}
     {{- if .Values.config.operationProfiling }}
     operationProfiling:
       mode: {{ .Values.config.operationProfiling.mode }}

@@ -44,6 +44,23 @@ spec:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if (eq .Values.config.security.authorization "enabled") }}
+      initContainers:
+        - name: copy-keyfile
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ['sh', '-c']
+          args:
+            - |
+              cp /keyfile/mongodb-replica-set-key {{ .Values.config.security.keyFile | quote }}
+              chown 999:999 {{ .Values.config.security.keyFile | quote }}
+              chmod 0400 {{ .Values.config.security.keyFile | quote }}
+          volumeMounts:
+            - name: keyfile-copy
+              mountPath: /etc/mongodb-keyfile
+            - name: keyfile
+              mountPath: /keyfile
+      {{- end }}
       containers:
         - name: {{ template "mongodb.name" . }}-secondary
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -59,19 +76,25 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{- if .Values.usePassword }}
+            {{- if (eq .Values.config.security.authorization "enabled") }}
             - name: MONGO_INITDB_ROOT_USERNAME
-              value: {{ .Values.mongodbRootUsername }}
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
+                  name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
+                  key: mongodb-root-username
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.useExistingSecret.enabled }}
+                  name: {{ .Values.useExistingSecret.name }}
+                  {{- else }}
                   name: {{ template "mongodb.fullname" . }}
+                  {{- end }}
                   key: mongodb-root-password
-            - name: MONGODB_REPLICA_SET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "mongodb.fullname" . }}
-                  key: mongodb-replica-set-key
             {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
@@ -104,6 +127,10 @@ spec:
               subPath: {{ .Values.persistence.subPath }}
             - name: config
               mountPath: /etc/mongodb
+            {{- if eq .Values.config.security.authorization "enabled" }}
+            - name: keyfile-copy
+              mountPath: /etc/mongodb-keyfile
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
@@ -135,6 +162,17 @@ spec:
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
+        {{- if (eq .Values.config.security.authorization "enabled") }}
+        - name: keyfile-copy
+          emptyDir: {}
+        - name: keyfile
+          secret:
+            secretName: {{ template "mongodb.fullname" . }}
+            defaultMode: 0400
+            items:
+              - key: mongodb-replica-set-key
+                path: mongodb-replica-set-key
+        {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: mongo-persistent-storage

@@ -1,8 +1,8 @@
-{{- if and .Values.replicaSet.enabled .Values.replicaSet.job.enabled }}
+{{- if and (not .Values.replicaSet.enabled) .Values.createUsers }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ printf "%s-create-replicaset-initiate-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
+  name: {{ printf "%s-users-setup-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
   labels:
     app: {{ template "mongodb.name" . }}
     chart: {{ template "mongodb.chart" . }}
@@ -15,14 +15,51 @@ metadata:
 spec:
   template:
     metadata:
-      name: "replicaset-initiate-job"
+      name: {{ printf "%s-users-setup-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
     spec:
       restartPolicy: Never
       containers:
-        - name: {{ printf "%s-create-replicaset-initiate-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
-          image: "{{ .Values.replicaSet.job.image.repository }}:{{ default .Chart.AppVersion .Values.replicaSet.job.image.tag }}"
-          imagePullPolicy: {{ .Values.replicaSet.job.image.pullPolicy }}
-          command: ["/scripts/replicaset.sh"]
+        - name: {{ printf "%s-users-setup-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              SVC_NAME="{{ template "mongodb.serviceName" . }}"
+              HOST="${SVC_NAME}.${NAMESPACE}.svc.cluster.local"
+              PORT={{ int .Values.service.port }}
+              CONN_STRING="mongodb://${HOST}:${PORT}/admin"
+
+              wait_for_mongo(){
+                local host="$1"
+                local port="$2"
+
+                ready="false"
+                i=0
+                while [ $i -lt 30 ]; do
+                  mongo --host $host --port $port --eval "db.adminCommand('ping')"
+                  if [ $? -eq 0 ]; then
+                    ready="true"
+                    break
+                  fi
+                  sleep 10
+                  i=$(expr $i + 1)
+                done
+                if [ "$ready" = "false" ]; then
+                  echo "Host $host is not ready"
+                  exit 1
+                fi
+              }
+
+              finish() {
+                code=$?
+                curl -s -XPOST http://127.0.0.1:15020/quitquitquit
+                exit $code
+              }
+              trap finish EXIT
+              # wait for mongo instance to be up and running
+              wait_for_mongo "$HOST" "$PORT"
+              mongo "${CONN_STRING}" /setup-scripts/mongo-users.js
           env:
             - name: NAMESPACE
               valueFrom:
@@ -32,7 +69,6 @@ spec:
             - name: MONGO_AUTHENTICATION_ENABLED
               value: "true"
             {{- end }}
-            {{- if or .Values.createUsers (eq .Values.config.security.authorization "enabled") }}
             - name: MONGO_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -87,25 +123,14 @@ spec:
                   name: {{ template "mongodb.fullname" . }}
                   {{- end }}
                   key: mongodb-developer-password
-            {{- end }}
           volumeMounts:
-            - name: {{ include "mongodb.name" . }}-script-config
-              mountPath: /scripts
-            {{- if .Values.createUsers }}
             - name: {{ include "mongodb.name" . }}-setup-scripts
               mountPath: /setup-scripts
-            {{- end }}
       volumes:
-        - name: {{ include "mongodb.name" . }}-script-config
-          configMap:
-            name: {{ template "mongodb.fullname" . }}-script-configmap
-            defaultMode: 0555
-        {{- if .Values.createUsers }}
         - name: {{ include "mongodb.name" . }}-setup-scripts
           configMap:
             name: {{ template "mongodb.fullname" . }}-setup-scripts
             defaultMode: 0555
-        {{- end }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}

@@ -1,0 +1,64 @@
+{{- if .Values.createUsers }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "mongodb.name" . }}
+    chart: {{ template "mongodb.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "mongodb.fullname" . }}-setup-scripts
+data:
+  mongo-users.js: |
+    // Function to create a user
+    function createUserIfNotExists(username, password, role) {
+      if (!db.getUser(username)) {
+        db.createUser({
+          user: username,
+          pwd: password,
+          roles: [
+            { role: role, db: 'admin' }
+          ]
+        });
+        print(username + " user created.");
+      } else {
+        print(username + " user already exists.");
+      }
+    }
+
+    // works for version < 5.x.x (based on mongo version 4.4.18)
+    var auth_enabled = _getEnv('MONGO_AUTHENTICATION_ENABLED');
+    var mongo_root_username = _getEnv('MONGO_ROOT_USERNAME');
+    var mongo_root_password = _getEnv('MONGO_ROOT_PASSWORD');
+    var mongo_service_username = _getEnv('MONGO_SERVICE_USERNAME');
+    var mongo_service_password = _getEnv('MONGO_SERVICE_PASSWORD');
+    var mongo_developer_username = _getEnv('MONGO_DEVELOPER_USERNAME');
+    var mongo_developer_password = _getEnv('MONGO_DEVELOPER_PASSWORD');
+
+    if (mongo_root_username == "" ||
+        mongo_root_password == "" ||
+        mongo_service_username == "" ||
+        mongo_service_password == "" ||
+        mongo_developer_username == "" ||
+        mongo_developer_password == "") {
+      print("ENV variables not set. Skipping creating users.")
+      quit()
+    }
+
+    print("Started Adding the Users.");
+    if (auth_enabled == "true") {
+      db = db.getSiblingDB("admin");
+
+      // Authenticate with the Root user
+      db.auth(mongo_root_username, mongo_root_password)
+    } else {
+      // Create root user with admin role on all databases
+      createUserIfNotExists(mongo_root_username, mongo_root_password, 'root');
+    }
+
+    // Create service user with readWrite role on all databases
+    createUserIfNotExists(mongo_service_username, mongo_service_password, 'readWriteAnyDatabase');
+
+    // Create developer user with readOnly role on all databases
+    createUserIfNotExists(mongo_developer_username, mongo_developer_password, 'readAnyDatabase');
+{{- end }}
