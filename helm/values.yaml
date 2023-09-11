@@ -19,7 +19,7 @@ createUsers: false
 ### If false, a default secret will be generated
 useExistingSecret:
   enabled: false
-  name: "mongodb-custom-secret"
+  name: "mongodb-credentials"
 
 ## MongoDB user passwords
 ### Used when existing secret is not provided
