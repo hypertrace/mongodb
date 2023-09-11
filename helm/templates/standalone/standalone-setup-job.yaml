@@ -50,7 +50,12 @@ spec:
                   exit 1
                 fi
               }
-
+    finish() {
+      code=$?
+      curl -s -XPOST http://127.0.0.1:15020/quitquitquit
+      exit $code
+    }
+    trap finish EXIT
               # wait for mongo instance to be up and running
               wait_for_mongo "$HOST" "$PORT"
               mongo "${CONN_STRING}" /setup-scripts/mongo-users.js
