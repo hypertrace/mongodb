@@ -140,7 +140,10 @@ spec:
       {{- end }}
       {{- if .Values.securityContext.enabled }}
       securityContext:
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+        {{- if .Values.securityContext.runAsUser }}
+        runAsUser: {{ int .Values.securityContext.runAsUser }}
+        {{- end }}
+        fsGroup: {{ int .Values.securityContext.fsGroup }}
       {{- end }}
       {{- if or .Values.affinity .Values.affinitySecondary }}
       affinity:
