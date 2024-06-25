@@ -59,6 +59,14 @@ spec:
               mountPath: /etc/mongodb-keyfile
             - name: keyfile
               mountPath: /keyfile
+          {{- with .Values.initContainer.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- end }}
       containers:
         - name: {{ template "mongodb.name" . }}-primary
@@ -132,17 +140,18 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
-      {{- if .Values.securityContext.enabled }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- if .Values.securityContext.runAsUser }}
-        runAsUser: {{ int .Values.securityContext.runAsUser }}
-        {{- end }}
-        fsGroup: {{ int .Values.securityContext.fsGroup }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
       affinity:

@@ -31,10 +31,14 @@ mongodbDeveloperUsername: ""
 mongodbDeveloperPassword: ""
 
 ## Pod Security Context
-securityContext:
-  enabled: false
+# securityContext:
+  # enabled: false
   # fsGroup: 1001
   # runAsUser: 1001
+
+podSecurityContext: {}
+
+containerSecurityContext: {}
 
 ## Kubernetes service type
 service:
@@ -77,6 +81,13 @@ replicaSet:
       repository: hypertrace/mongo-curl
       tag: ""
       pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
 # Annotations to be added to the deployment or statefulsets
 annotations: {}
@@ -95,13 +106,13 @@ resources: {}
 
 # Define separate resources per arbiter, which are less then primary or secondary
 # used only when replica set is enabled
-resourcesArbiter: {}
-# limits:
-#   cpu: 500m
-#   memory: 512Mi
-# requests:
-#   cpu: 100m
-#   memory: 256Mi
+resourcesArbiter:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
 
 ## Node selector
 nodeSelector: {}
@@ -168,6 +179,15 @@ storageclass:
   parameters:
     type: pd-standard
 
+initContainer:
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
 config:
   storage:
     directoryPerDB: false
@@ -231,7 +251,7 @@ exporter:
 
   resources:
     limits:
-      cpu: 250m
+      cpu: 500m
       memory: 256Mi
     requests:
       cpu: 100m
@@ -240,14 +260,18 @@ exporter:
   # Extra environment variables that will be passed into the exporter pod
   env: {}
 
-  securityContext:
+  podSecurityContext: {}
+
+  containerSecurityContext:
     allowPrivilegeEscalation: false
     capabilities:
-      drop: ["all"]
+      drop: ["ALL"]
     readOnlyRootFilesystem: true
     runAsGroup: 10000
     runAsNonRoot: true
     runAsUser: 10000
+    seccompProfile:
+      type: RuntimeDefault
 
   service:
     annotations: {}
@@ -291,6 +315,24 @@ backup:
   gcloud: {}
   affinity: {}
   nodeSelector: {}
-  securityContext: {}
+  resources:
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+    requests:
+      cpu: "0.2"
+      memory: "512Mi"
+  podSecurityContext: {}
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+    readOnlyRootFilesystem: true
+    runAsGroup: 65534
+    runAsNonRoot: true
+    runAsUser: 65534
+    seccompProfile:
+      type: RuntimeDefault
+
   tolerations: []
   podAnnotations: {}
