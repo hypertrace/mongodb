@@ -273,6 +273,7 @@ exporter:
   prometheusrule:
     enabled: false
     annotations: {}
+    additionalRuleLabels: {}
 
 backup:
   enabled: false
