@@ -60,6 +60,10 @@ spec:
               mountPath: /etc/mongodb-keyfile
             - name: keyfile
               mountPath: /keyfile
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- end }}
       containers:
         - name: {{ template "mongodb.name" . }}-arbiter
@@ -128,14 +132,18 @@ spec:
             - name: keyfile-copy
               mountPath: /etc/mongodb-keyfile
             {{- end }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
-      {{- if .Values.securityContext.enabled }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.affinityArbiter }}
       affinity:

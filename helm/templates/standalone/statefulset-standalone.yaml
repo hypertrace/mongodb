@@ -105,14 +105,18 @@ spec:
               mountPath: /etc/mongodb
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
-      {{- if .Values.securityContext.enabled }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
       affinity:

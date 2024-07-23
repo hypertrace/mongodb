@@ -56,8 +56,10 @@ spec:
             {{- toYaml .Values.exporter.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.exporter.resources | nindent 12 }}
+          {{- with .Values.exporter.containerSecurityContext }}
           securityContext:
-            {{- toYaml .Values.exporter.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       affinity:
         {{- toYaml .Values.exporter.affinity | nindent 8 }}
       imagePullSecrets:
@@ -70,4 +72,8 @@ spec:
       terminationGracePeriodSeconds: 30
       tolerations:
         {{- toYaml .Values.exporter.tolerations | nindent 8 }}
+      {{- with .Values.exporter.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}
