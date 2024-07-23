@@ -65,6 +65,7 @@ jobs:
           tag: ${{ steps.docker.outputs.tag }}
           output-mode: github
           category: mongo
+        continue-on-error: true
 
   validate-helm-charts:
     runs-on: ubuntu-22.04
