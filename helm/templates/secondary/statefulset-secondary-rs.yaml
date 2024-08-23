@@ -171,6 +171,11 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       {{- end }}
       volumes:
+        {{- if .Values.persistence.existingClaimSecondary }}
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaimSecondary | quote }}
+        {{- end }}
         - name: config
           configMap:
             name: {{ template "mongodb.fullname" . }}
@@ -185,6 +190,7 @@ spec:
               - key: mongodb-replica-set-key
                 path: mongodb-replica-set-key
         {{- end }}
+  {{- if not .Values.persistence.existingClaimSecondary }}
   volumeClaimTemplates:
     - metadata:
         name: mongo-persistent-storage
@@ -197,4 +203,5 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistence.size | quote }}
+  {{- end }}
 {{- end }}
