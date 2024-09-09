@@ -150,6 +150,9 @@ persistence:
   storageClassName: "standard"
   accessModes: ["ReadWriteOnce"]
   size: 2Gi
+  ## Use existing PVC
+  # existingClaim: "primary-pvc-name"
+  # existingClaimSecondary: "secondary-pvc-name"
 
 ## Configure extra options for liveness and readiness probes
 livenessProbe:
