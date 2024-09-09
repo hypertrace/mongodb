@@ -123,6 +123,9 @@ nodeSelectorSecondary: {}
 ## Define Separate nodeSelector for arbiter
 nodeSelectorArbiter: {}
 
+## Termination Grace Period
+terminationGracePeriodSeconds: 600
+
 ## Affinity
 affinity: {}
 
