@@ -77,3 +77,5 @@ jobs:
 
       - name: validate charts
         uses: hypertrace/github-actions/validate-charts@main
+        with:
+          extra-args: --set persistence.subPath=mongodb
