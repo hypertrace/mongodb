@@ -48,6 +48,10 @@ spec:
       initContainers:
         - name: copy-keyfile
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ['sh', '-c']
           args:
