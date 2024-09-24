@@ -40,6 +40,10 @@ podSecurityContext: {}
 
 containerSecurityContext: {}
 
+commonPodLabels: {}
+
+commonPodAnnotations: {}
+
 ## Kubernetes service type
 service:
   name: ""

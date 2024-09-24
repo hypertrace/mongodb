@@ -26,10 +26,21 @@ spec:
   jobTemplate:
     spec:
       template:
-        {{- if .Values.backup.podAnnotations }}
+        {{- if or .Values.commonPodLabels .Values.backup.podAnnotations .Values.commonPodAnnotations }}
         metadata:
+          {{- with .Values.commonPodLabels }}
+          labels:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or .Values.backup.podAnnotations .Values.commonPodAnnotations }}
           annotations:
-            {{- toYaml .Values.backup.podAnnotations | nindent 12 }}
+            {{- with .Values.backup.podAnnotations }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.commonPodAnnotations }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
         {{- end }}
         spec:
           restartPolicy: Never
