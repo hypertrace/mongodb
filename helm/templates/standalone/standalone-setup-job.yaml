@@ -126,6 +126,10 @@ spec:
           volumeMounts:
             - name: {{ include "mongodb.name" . }}-setup-scripts
               mountPath: /setup-scripts
+          {{- with .Values.initContainer.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}

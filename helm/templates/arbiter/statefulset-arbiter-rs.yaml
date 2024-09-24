@@ -60,6 +60,10 @@ spec:
               mountPath: /etc/mongodb-keyfile
             - name: keyfile
               mountPath: /keyfile
+          {{- with .Values.initContainer.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
