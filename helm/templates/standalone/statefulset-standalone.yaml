@@ -104,7 +104,7 @@ spec:
             - name: config
               mountPath: /etc/mongodb
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.initContainer.resources | nindent 12 }}
           {{- with .Values.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
