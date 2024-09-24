@@ -21,10 +21,6 @@ spec:
       containers:
         - name: {{ printf "%s-users-setup-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           command: ["/bin/sh", "-c"]
           args:
@@ -130,6 +126,10 @@ spec:
           volumeMounts:
             - name: {{ include "mongodb.name" . }}-setup-scripts
               mountPath: /setup-scripts
+          {{- with .Values.initContainer.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
