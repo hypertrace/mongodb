@@ -35,20 +35,12 @@ spec:
         chart: {{ template "mongodb.chart" . }}
         release: {{ .Release.Name }}
         component: primary
-        {{- if .Values.podLabels }}
-        {{- toYaml .Values.podLabels | nindent 8 }}
-        {{- end }}
-        {{- with .Values.commonPodLabels }}
+        {{- with merge .Values.podLabels .Values.commonPodLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- if or .Values.podAnnotations .Values.commonPodAnnotations }}
+      {{- with merge .Values.podAnnotations .Values.commonPodAnnotations }}
       annotations:
-        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-        {{- end }}
-        {{- with .Values.commonPodAnnotations }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
       {{- end }}
     spec:
       {{- if (eq .Values.config.security.authorization "enabled") }}

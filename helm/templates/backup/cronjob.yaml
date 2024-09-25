@@ -32,14 +32,9 @@ spec:
           labels:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if or .Values.backup.podAnnotations .Values.commonPodAnnotations }}
+          {{- with merge .Values.backup.podAnnotations .Values.commonPodAnnotations }}
           annotations:
-            {{- with .Values.backup.podAnnotations }}
             {{- toYaml . | nindent 12 }}
-            {{- end }}
-            {{- with .Values.commonPodAnnotations }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
           {{- end }}
         {{- end }}
         spec:
