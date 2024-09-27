@@ -16,6 +16,14 @@ spec:
   template:
     metadata:
       name: "replicaset-initiate-job"
+      {{- with .Values.commonPodAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.commonPodLabels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       restartPolicy: Never
       containers:

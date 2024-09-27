@@ -36,12 +36,12 @@ spec:
         chart: {{ template "mongodb.chart" . }}
         release: {{ .Release.Name }}
         component: secondary
-        {{- if .Values.podLabels }}
-        {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- with merge .Values.podLabels .Values.commonPodLabels }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- if .Values.podAnnotations }}
+      {{- with merge .Values.podAnnotations .Values.commonPodAnnotations }}
       annotations:
-        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
       {{- if (eq .Values.config.security.authorization "enabled") }}

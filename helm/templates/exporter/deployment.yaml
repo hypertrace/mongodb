@@ -18,13 +18,16 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-      {{- if .Values.exporter.podAnnotations }}
+      {{- with merge .Values.exporter.podAnnotations .Values.commonPodAnnotations }}
       annotations:
-        {{- toYaml .Values.exporter.podAnnotations | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         app: {{ include "mongodb-exporter.name" . }}
         release: {{ .Release.Name }}
+        {{- with .Values.commonPodLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: {{ template "mongodb.serviceAccountName" . }}
       containers:
