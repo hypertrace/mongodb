@@ -30,20 +30,6 @@ mongodbServicePassword: ""
 mongodbDeveloperUsername: ""
 mongodbDeveloperPassword: ""
 
-## Pod Security Context
-# securityContext:
-  # enabled: false
-  # fsGroup: 1001
-  # runAsUser: 1001
-
-podSecurityContext: {}
-
-containerSecurityContext: {}
-
-commonPodLabels: {}
-
-commonPodAnnotations: {}
-
 ## Kubernetes service type
 service:
   name: ""
@@ -104,6 +90,15 @@ podAnnotations: {}
 
 # Additional pod labels to apply
 podLabels: {}
+
+## Pod Security Context
+podSecurityContext: {}
+
+containerSecurityContext: {}
+
+commonPodLabels: {}
+
+commonPodAnnotations: {}
 
 ## Configure resource requests and limits
 resources: {}
@@ -267,19 +262,6 @@ exporter:
   # Extra environment variables that will be passed into the exporter pod
   env: {}
 
-  podSecurityContext: {}
-
-  containerSecurityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop: ["ALL"]
-    readOnlyRootFilesystem: true
-    runAsGroup: 10000
-    runAsNonRoot: true
-    runAsUser: 10000
-    seccompProfile:
-      type: RuntimeDefault
-
   service:
     annotations: {}
     port: 9216
@@ -305,42 +287,3 @@ exporter:
     enabled: false
     annotations: {}
     additionalRuleLabels: {}
-
-backup:
-  enabled: false
-  schedule: "0 4 * * *"
-  startingDeadlineSeconds: 86400
-  concurrencyPolicy: Forbid
-  image:
-    repository: "hypertrace/mongodb-backup"
-    tag: ""
-    pullPolicy: "IfNotPresent"
-  imagePullSecrets: []
-  mongodb:
-    uri: "mongo://mongodb:27017"
-  oplog: false
-  cluster: "test"
-  gcloud: {}
-  affinity: {}
-  nodeSelector: {}
-  resources:
-    limits:
-      cpu: "2"
-      memory: "2Gi"
-    requests:
-      cpu: "0.2"
-      memory: "512Mi"
-  podSecurityContext: {}
-  containerSecurityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop: ["ALL"]
-    readOnlyRootFilesystem: true
-    runAsGroup: 65534
-    runAsNonRoot: true
-    runAsUser: 65534
-    seccompProfile:
-      type: RuntimeDefault
-
-  tolerations: []
-  podAnnotations: {}

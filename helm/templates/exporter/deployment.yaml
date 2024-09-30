@@ -59,7 +59,7 @@ spec:
             {{- toYaml .Values.exporter.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.exporter.resources | nindent 12 }}
-          {{- with .Values.exporter.containerSecurityContext }}
+          {{- with .Values.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -75,7 +75,7 @@ spec:
       terminationGracePeriodSeconds: 30
       tolerations:
         {{- toYaml .Values.exporter.tolerations | nindent 8 }}
-      {{- with .Values.exporter.podSecurityContext }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
