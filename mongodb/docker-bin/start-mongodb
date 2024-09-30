@@ -1,9 +1,0 @@
-#!/bin/sh
-# ENTRYPOINT script that starts Confluent Schema Registry
-#
-# This intentionally locates config using the current working directory, in order to consolidate
-# Dockerfile instructions to WORKDIR
-set -ue
-
-# overrides normal entrypoint to quiet logs.
-exec mongod --quiet --bind_ip 0.0.0.0 --dbpath ${PWD}/data

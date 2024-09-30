@@ -42,30 +42,12 @@ jobs:
         with:
           args: dockerBuildImages
 
-      - name: Run Trivy vulnerability scanner for mongodb-backup image
-        uses: hypertrace/github-actions/trivy-image-scan@main
-        with:
-          image: hypertrace/mongodb-backup
-          output-mode: github
-          category: mongodb-backup
-        continue-on-error: true
-
       - name: Run Trivy vulnerability scanner for mongo-curl image
         uses: hypertrace/github-actions/trivy-image-scan@main
         with:
           image: hypertrace/mongo-curl
           output-mode: github
           category: mongo-curl
-        continue-on-error: true
-
-      - name: Run Trivy vulnerability scanner for mongo image
-        uses: hypertrace/github-actions/trivy-image-scan@main
-        with:
-          image: ${{ steps.docker.outputs.repository }}
-          tag: ${{ steps.docker.outputs.tag }}
-          output-mode: github
-          category: mongo
-        continue-on-error: true
 
   validate-helm-charts:
     runs-on: ubuntu-22.04
