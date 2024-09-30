@@ -15,27 +15,18 @@ jobs:
     steps:
        # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
       - name: Check out code
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_READ_USER }}
           password: ${{ secrets.DOCKERHUB_READ_TOKEN }}
 
-      - name: Determine docker image
-        id: docker
-        run: |
-          echo repository=$(yq e '.image.repository' ./helm/values.yaml) >> $GITHUB_OUTPUT
-          echo tag=$(yq e '.image.tag' ./helm/values.yaml) >> $GITHUB_OUTPUT
-
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Pull Docker Image
-        run: docker pull ${{ steps.docker.outputs.repository }}:${{ steps.docker.outputs.tag }}
+        uses: docker/setup-buildx-action@v3
 
       - name: Build with Gradle
         uses: hypertrace/github-actions/gradle@main
@@ -53,7 +44,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out code
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
