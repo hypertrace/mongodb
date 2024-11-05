@@ -38,23 +38,23 @@ spec:
                 secretKeyRef:
                   name: {{ include "mongodb-exporter.fullname" . }}
                   key: mongodb-uri
-						{{- if .Values.useExistingSecret.enabled }}
-						- name: MONGODB_USER
-							valueFrom:
-								secretKeyRef:
-									name: {{ .Values.useExistingSecret.name }}
-									key: mongodb-root-username
-						- name: MONGODB_PASSWORD
-							valueFrom:
-								secretKeyRef:
-									name: {{ .Values.useExistingSecret.name }}
-									key: mongodb-root-password
-						{{- else }}
-						- name: MONGODB_USER
-							value: {{ .Values.mongodbRootUsername }}
-						- name: MONGODB_PASSWORD
-							value: {{ .Values.mongodbRootPassword }}
-						{{- end}}
+            {{- if .Values.useExistingSecret.enabled }}
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.useExistingSecret.name }}
+                  key: mongodb-root-username
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                name: {{ .Values.useExistingSecret.name }}
+                key: mongodb-root-password
+            {{- else }}
+            - name: MONGODB_USER
+              value: {{ .Values.mongodbRootUsername }}
+            - name: MONGODB_PASSWORD
+              value: {{ .Values.mongodbRootPassword }}
+            {{- end}}
             {{- if .Values.exporter.env }}
             {{- range $key, $value := .Values.exporter.env }}
             - name: "{{ $key }}"
