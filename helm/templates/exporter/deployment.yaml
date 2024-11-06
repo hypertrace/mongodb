@@ -47,8 +47,8 @@ spec:
             - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                name: {{ .Values.useExistingSecret.name }}
-                key: mongodb-service-password
+                  name: {{ .Values.useExistingSecret.name }}
+                  key: mongodb-service-password
             {{- else }}
             - name: MONGODB_USER
               value: {{ .Values.mongodbServiceUsername }}
