@@ -43,17 +43,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.useExistingSecret.name }}
-                  key: mongodb-root-username
+                  key: mongodb-service-username
             - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
                 name: {{ .Values.useExistingSecret.name }}
-                key: mongodb-root-password
+                key: mongodb-service-password
             {{- else }}
             - name: MONGODB_USER
-              value: {{ .Values.mongodbRootUsername }}
+              value: {{ .Values.mongodbServiceUsername }}
             - name: MONGODB_PASSWORD
-              value: {{ .Values.mongodbRootPassword }}
+              value: {{ .Values.mongodbServicePassword }}
             {{- end}}
             {{- if .Values.exporter.env }}
             {{- range $key, $value := .Values.exporter.env }}
