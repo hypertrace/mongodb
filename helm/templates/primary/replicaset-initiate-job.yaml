@@ -28,8 +28,8 @@ spec:
       restartPolicy: Never
       containers:
         - name: {{ printf "%s-create-replicaset-initiate-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
-          image: "{{ .Values.replicaSet.job.image.repository }}:{{ default .Chart.AppVersion .Values.replicaSet.job.image.tag }}"
-          imagePullPolicy: {{ .Values.replicaSet.job.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/scripts/replicaset.sh"]
           env:
             - name: NAMESPACE

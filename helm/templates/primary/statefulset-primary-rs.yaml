@@ -46,7 +46,7 @@ spec:
       {{- if (eq .Values.config.security.authorization "enabled") }}
       initContainers:
         - name: copy-keyfile
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ['sh', '-c']
           args:
@@ -70,7 +70,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ template "mongodb.name" . }}-primary
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - "--config"
