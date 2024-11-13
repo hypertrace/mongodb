@@ -2,8 +2,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  repository: mongo
-  tag: 4.4.22
+  repository: hypertrace/mongo-curl
+  tag: ""
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
@@ -67,10 +67,6 @@ replicaSet:
   ## job for initiating replica set
   job:
     enabled: true
-    image:
-      repository: hypertrace/mongo-curl
-      tag: ""
-      pullPolicy: IfNotPresent
     resources:
       limits:
         cpu: 250m

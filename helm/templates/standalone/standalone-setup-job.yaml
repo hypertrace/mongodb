@@ -28,7 +28,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: {{ printf "%s-users-setup-job" (include "mongodb.name" .) | trunc 53 | trimSuffix "-" }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           command: ["/bin/sh", "-c"]
           args:
