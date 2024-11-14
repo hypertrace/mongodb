@@ -100,7 +100,7 @@ spec:
           volumeMounts:
             - name: mongo-persistent-storage
               mountPath: {{ .Values.persistence.mountPath }}
-              subPath: {{ .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath | quote }}
             - name: config
               mountPath: /etc/mongodb
           resources:
